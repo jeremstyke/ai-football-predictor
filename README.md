@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://jeremstyke.github.io/ai-football-predictor/?src=github"><img src="https://jeremstyke.github.io/ai-football-predictor/icon-192.png" alt="AI Football Predictor logo" width="96" height="96"></a>
+<a href="https://aifootpredictor.com/?src=github"><img src="https://aifootpredictor.com/icon-192.png" alt="AI Football Predictor logo" width="96" height="96"></a>
 
 # AI Football Predictor
 
@@ -10,11 +10,11 @@ Win, draw and loss probabilities · expected goals · most likely score · live 
 
 <br>
 
-[![Open the app](https://img.shields.io/badge/Open_the_app-3ee0a8?style=for-the-badge&logo=googlechrome&logoColor=06090e)](https://jeremstyke.github.io/ai-football-predictor/?src=github)
+[![Open the app](https://img.shields.io/badge/Open_the_app-3ee0a8?style=for-the-badge&logo=googlechrome&logoColor=06090e)](https://aifootpredictor.com/?src=github)
 [![Telegram mini app](https://img.shields.io/badge/Telegram_mini_app-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/ai_football_predictorbot/app?startapp=src_github)
 [![Channel](https://img.shields.io/badge/Daily_picks_channel-0b1118?style=for-the-badge&logo=telegram&logoColor=26A5E4)](https://t.me/aifootballpredictorchannel)
 
-[![Free](https://img.shields.io/badge/price-free-3ee0a8?style=flat-square)](https://jeremstyke.github.io/ai-football-predictor/?src=github)
+[![Free](https://img.shields.io/badge/price-free-3ee0a8?style=flat-square)](https://aifootpredictor.com/?src=github)
 [![Competitions](https://img.shields.io/badge/competitions-25%2B-4cc3ff?style=flat-square)](#-competitions)
 [![Track record](https://img.shields.io/badge/track_record-public-f5b84a?style=flat-square)](#-a-track-record-you-can-check)
 [![Languages](https://img.shields.io/badge/languages-EN_·_FR-7d8ba1?style=flat-square)](README.fr.md)
@@ -22,7 +22,7 @@ Win, draw and loss probabilities · expected goals · most likely score · live 
 
 <br>
 
-<a href="https://jeremstyke.github.io/ai-football-predictor/blog/?src=github"><img src="https://txvrlvcxfnylnrpdrxtt.supabase.co/functions/v1/afp-og?n=52" alt="AI Football Predictor match preview card with both club logos" width="760"></a>
+<a href="https://aifootpredictor.com/blog/?src=github"><img src="https://txvrlvcxfnylnrpdrxtt.supabase.co/functions/v1/afp-og?n=52" alt="AI Football Predictor match preview card with both club logos" width="760"></a>
 
 </div>
 
@@ -81,10 +81,10 @@ A Telegram game where you try to do better than the AI, alone or against your fr
 
 | | Where | |
 |:-:|---|---|
-| 🌐 | **Website and web app**, installable on iPhone and Android | [Open](https://jeremstyke.github.io/ai-football-predictor/?src=github) |
+| 🌐 | **Website and web app**, installable on iPhone and Android | [Open](https://aifootpredictor.com/?src=github) |
 | ✈️ | **Telegram mini app**, with match alerts from the bot | [Open](https://t.me/ai_football_predictorbot/app?startapp=src_github) |
 | 📣 | **Telegram channel**, the most likely matches every day | [Join](https://t.me/aifootballpredictorchannel) |
-| 📰 | **Blog**, AI-written previews of the big matches | [Read](https://jeremstyke.github.io/ai-football-predictor/blog/?src=github) |
+| 📰 | **Blog**, AI-written previews of the big matches | [Read](https://aifootpredictor.com/blog/?src=github) |
 
 <br>
 
@@ -105,7 +105,7 @@ flowchart LR
 3. **Poisson model.** Expected goals become the probability of every score (0-0, 1-0, 1-1, 2-1...). Adding the scores up gives win, draw and loss, over 2.5 and both teams to score.
 4. **Lock and check.** The probability is frozen before kickoff, then compared with what really happened.
 
-Full details in the **[method page](https://jeremstyke.github.io/ai-football-predictor/method/?src=github)**.
+Full details in the **[method page](https://aifootpredictor.com/method/?src=github)**.
 
 > [!NOTE]
 > These are **probabilities, not certainties**. Something at 60% fails 4 times out of 10, and that is expected. A model is judged over hundreds of matches, which is why the history is public.
@@ -120,7 +120,7 @@ Many prediction sites only show their wins. Here:
 - ✅ every result is added automatically after the final whistle;
 - ✅ the whole history, good and bad, is **public** in the app's **Reliability** tab.
 
-**[→ See the live track record](https://jeremstyke.github.io/ai-football-predictor/?src=github)**
+**[→ See the live track record](https://aifootpredictor.com/?src=github)**
 
 <br>
 
@@ -143,9 +143,9 @@ Show live probabilities on your site or blog, **free** and updated automatically
 
 ```html
 <div class="afp-widget" data-lang="en" data-lg="E0,CL" data-n="6">
-  <a href="https://jeremstyke.github.io/ai-football-predictor/">Football probabilities by AI Football Predictor</a>
+  <a href="https://aifootpredictor.com/">Football probabilities by AI Football Predictor</a>
 </div>
-<script src="https://jeremstyke.github.io/ai-football-predictor/embed.js" async></script>
+<script src="https://aifootpredictor.com/embed.js" async></script>
 ```
 
 | `data-type` | Shows |
@@ -157,7 +157,7 @@ Show live probabilities on your site or blog, **free** and updated automatically
 | `table` | A predicted season table |
 | `articles` | The latest match previews |
 
-**[→ All widgets and the code generator](https://jeremstyke.github.io/ai-football-predictor/widget/?src=github)**
+**[→ All widgets and the code generator](https://aifootpredictor.com/widget/?src=github)**
 
 <br>
 
@@ -165,7 +165,7 @@ Show live probabilities on your site or blog, **free** and updated automatically
 
 For the big matches, our AI writes a **preview from our own data only**: probabilities, expected goals, recent form, standings and head to head. Each preview is updated with the result after the match.
 
-[Read the previews](https://jeremstyke.github.io/ai-football-predictor/blog/?src=github) · [Previews widget](https://jeremstyke.github.io/ai-football-predictor/widget/articles/?src=github) · [RSS feed](https://jeremstyke.github.io/ai-football-predictor/feed.xml)
+[Read the previews](https://aifootpredictor.com/blog/?src=github) · [Previews widget](https://aifootpredictor.com/widget/articles/?src=github) · [RSS feed](https://aifootpredictor.com/feed.xml)
 
 <br>
 
@@ -182,7 +182,7 @@ For media, apps and developers.
 | `GET /reliability` | The public track record |
 | `GET /articles` | Ready-to-publish previews in English and French, with image |
 
-**[→ Docs and early access](https://jeremstyke.github.io/ai-football-predictor/api/?src=github)**
+**[→ Docs and early access](https://aifootpredictor.com/api/?src=github)**
 
 <br>
 
