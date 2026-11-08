@@ -53,7 +53,7 @@
     if (!gsi) { gsi = document.createElement("script"); gsi.src = "https://accounts.google.com/gsi/client"; gsi.async = true; document.head.appendChild(gsi); }
     gsi.addEventListener("load", cb);
   }
-  var css = ".aifp-acb{display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.22);color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap}.aifp-acb img{width:22px;height:22px;border-radius:50%;display:block}.aifp-acb:focus-visible{outline:2px solid #4aa3ff;outline-offset:2px}"
+  var css = ".aifp-acb{display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.22);color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap}.aifp-acb{flex-shrink:0}@media(max-width:760px){.aifp-acb .t{display:none}.aifp-acb{padding:6px 9px;gap:0}}.aifp-acb img{width:22px;height:22px;border-radius:50%;display:block}.aifp-acb:focus-visible{outline:2px solid #4aa3ff;outline-offset:2px}"
     + ".aifp-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(3,6,10,.72);display:flex;align-items:center;justify-content:center;padding:20px}.aifp-md b,.aifp-md h2{color:#e8eef7}.aifp-md{max-height:90vh;overflow:auto;background:#0e1726;color:#e8eef7;border:1px solid #22324a;border-radius:16px;max-width:380px;width:100%;padding:22px 20px;font:15px/1.5 system-ui,-apple-system,sans-serif;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}"
     + ".aifp-md h2{font-size:18px;margin:0 0 8px}.aifp-md p{margin:0 0 16px;color:#9fb0c8;font-size:14px}.aifp-md .g{display:flex;justify-content:center;min-height:44px}.aifp-md .e{color:#ff8a8a;font-size:13px;margin-top:10px;min-height:18px}.aifp-md .l{display:flex;justify-content:space-between;margin-top:16px;font-size:13px}.aifp-md .l a,.aifp-md .l button{color:#8fb8ff !important;background:none;border:0;font:inherit;cursor:pointer;padding:0}.aifp-md .u{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px}.aifp-md .u img{width:42px;height:42px;border-radius:50%}.aifp-md .bt{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #2b3f5c !important;background:#15233a !important;color:#e8eef7 !important;font:inherit;font-weight:600;cursor:pointer;margin-top:8px}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
@@ -83,7 +83,7 @@
   var btn = null;
   function paint() {
     if (!btn) return;
-    btn.innerHTML = S ? ((S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "👤") + "<span>" + esc(((S.user && S.user.name) || T.hi).split(" ")[0]) + "</span>") : "<span>👤 " + T.in + "</span>";
+    btn.innerHTML = S ? ((S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "👤") + "<span class=\"t\">" + esc(((S.user && S.user.name) || T.hi).split(" ")[0]) + "</span>") : "👤<span class=\"t\">" + T.in + "</span>";
     btn.setAttribute("aria-label", S ? T.title : T.in);
   }
   function mount() {
