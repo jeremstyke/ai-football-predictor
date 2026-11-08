@@ -5,12 +5,12 @@
 **Probabilités de victoire, de nul et de défaite pour chaque match de foot, vérifiées sur les vrais résultats.**
 *The win, draw and loss probability of every football match, checked against real results.*
 
-[![Ouvrir l'appli](https://img.shields.io/badge/Ouvrir_l'appli-3ee0a8?style=for-the-badge&logo=googlechrome&logoColor=06090e)](https://jeremstyke.github.io/ai-football-predictor/fr/?src=github)
+[![Ouvrir l'appli](https://img.shields.io/badge/Ouvrir_l'appli-3ee0a8?style=for-the-badge&logo=googlechrome&logoColor=06090e)](https://aifootpredictor.com/fr/?src=github)
 [![Telegram](https://img.shields.io/badge/Mini_app_Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/ai_football_predictorbot/app?startapp=src_github)
 [![Chaîne](https://img.shields.io/badge/Chaîne_Telegram-0b1118?style=for-the-badge&logo=telegram&logoColor=26A5E4)](https://t.me/aifootballpredictorchannel)
 [![English](https://img.shields.io/badge/🇬🇧_English-1b2533?style=for-the-badge)](README.md)
 
-<a href="https://jeremstyke.github.io/ai-football-predictor/fr/blog/?src=github"><img src="https://txvrlvcxfnylnrpdrxtt.supabase.co/functions/v1/afp-og?n=52" alt="Avant-match AI Football Predictor : probabilités du match avec les logos des deux clubs" width="720"></a>
+<a href="https://aifootpredictor.com/fr/blog/?src=github"><img src="https://txvrlvcxfnylnrpdrxtt.supabase.co/functions/v1/afp-og?n=52" alt="Avant-match AI Football Predictor : probabilités du match avec les logos des deux clubs" width="720"></a>
 
 </div>
 
@@ -40,10 +40,10 @@ L'appli marche partout :
 
 | Où | Lien |
 |---|---|
-| 🌐 Site web et web app (installable sur iPhone et Android) | [jeremstyke.github.io/ai-football-predictor](https://jeremstyke.github.io/ai-football-predictor/fr/?src=github) |
+| 🌐 Site web et web app (installable sur iPhone et Android) | [aifootpredictor.com](https://aifootpredictor.com/fr/?src=github) |
 | ✈️ Mini app Telegram | [t.me/ai_football_predictorbot/app](https://t.me/ai_football_predictorbot/app?startapp=src_github) |
 | 📣 Chaîne Telegram (les matchs les plus probables du jour) | [t.me/aifootballpredictorchannel](https://t.me/aifootballpredictorchannel) |
-| 📰 Blog (avant-matchs, guides) | [Blog](https://jeremstyke.github.io/ai-football-predictor/fr/blog/?src=github) |
+| 📰 Blog (avant-matchs, guides) | [Blog](https://aifootpredictor.com/fr/blog/?src=github) |
 
 ---
 
@@ -70,8 +70,8 @@ L'appli marche partout :
 3. **Loi de Poisson** : à partir des buts attendus, on calcule la probabilité de chaque score (0-0, 1-0, 1-1, 2-1...). En additionnant les scores, on obtient la victoire, le nul et la défaite, le plus de 2,5 buts et les deux équipes marquent.
 4. **Verrouillage** : la probabilité est figée avant le match, puis comparée au résultat réel.
 
-La méthode complète est expliquée ici : **[Méthode](https://jeremstyke.github.io/ai-football-predictor/fr/methode/?src=github)**.
-Guides : [le modèle de Poisson expliqué](https://jeremstyke.github.io/ai-football-predictor/fr/blog/comment-un-modele-de-poisson-predit-les-scores-au-football/?src=github), [plus/moins de 2,5 buts](https://jeremstyke.github.io/ai-football-predictor/fr/blog/plus-moins-de-2-5-buts-comment-la-probabilite-est-calculee/?src=github).
+La méthode complète est expliquée ici : **[Méthode](https://aifootpredictor.com/fr/methode/?src=github)**.
+Guides : [le modèle de Poisson expliqué](https://aifootpredictor.com/fr/blog/comment-un-modele-de-poisson-predit-les-scores-au-football/?src=github), [plus/moins de 2,5 buts](https://aifootpredictor.com/fr/blog/plus-moins-de-2-5-buts-comment-la-probabilite-est-calculee/?src=github).
 
 > Ce sont des **probabilités, pas des certitudes**. Une issue à 60 % ne se produit pas 4 fois sur 10, et c'est normal.
 
@@ -85,7 +85,7 @@ Beaucoup de sites de pronostics n'affichent que leurs réussites. Ici :
 - chaque résultat est ajouté automatiquement après le match ;
 - l'historique complet, réussites et échecs, est **public** dans l'onglet **Fiabilité** de l'appli.
 
-👉 [Voir la fiabilité en direct](https://jeremstyke.github.io/ai-football-predictor/fr/?src=github)
+👉 [Voir la fiabilité en direct](https://aifootpredictor.com/fr/?src=github)
 
 ---
 
@@ -115,14 +115,14 @@ Affichez les probabilités sur votre site ou votre blog, **gratuitement**, mises
 
 ```html
 <div class="afp-widget" data-lang="fr" data-lg="F1,CL" data-n="6">
-  <a href="https://jeremstyke.github.io/ai-football-predictor/fr/">Probabilités foot par AI Football Predictor</a>
+  <a href="https://aifootpredictor.com/fr/">Probabilités foot par AI Football Predictor</a>
 </div>
-<script src="https://jeremstyke.github.io/ai-football-predictor/embed.js" async></script>
+<script src="https://aifootpredictor.com/embed.js" async></script>
 ```
 
 Types disponibles : matchs du jour, direct (`data-type="live"`), un match précis (`data-type="match"`), une équipe (`data-type="team"`), un classement probable (`data-type="table"`), la liste des avant-matchs (`data-type="articles"`).
 
-👉 [Tous les widgets et le générateur de code](https://jeremstyke.github.io/ai-football-predictor/fr/widget/?src=github)
+👉 [Tous les widgets et le générateur de code](https://aifootpredictor.com/fr/widget/?src=github)
 
 ---
 
@@ -130,9 +130,9 @@ Types disponibles : matchs du jour, direct (`data-type="live"`), un match préci
 
 Pour les gros matchs, notre IA écrit un **avant-match** à partir de nos seules données : probabilités, buts attendus, forme récente, classement, confrontations. L'article est mis à jour avec le résultat après le match.
 
-- 📰 [Lire les avant-matchs sur le blog](https://jeremstyke.github.io/ai-football-predictor/fr/blog/?src=github)
-- 📋 [Widget gratuit des avant-matchs pour votre site](https://jeremstyke.github.io/ai-football-predictor/fr/widget/articles/?src=github)
-- 📡 [Flux RSS](https://jeremstyke.github.io/ai-football-predictor/fr/feed.xml)
+- 📰 [Lire les avant-matchs sur le blog](https://aifootpredictor.com/fr/blog/?src=github)
+- 📋 [Widget gratuit des avant-matchs pour votre site](https://aifootpredictor.com/fr/widget/articles/?src=github)
+- 📡 [Flux RSS](https://aifootpredictor.com/fr/feed.xml)
 
 ---
 
@@ -149,7 +149,7 @@ Pour les médias, applis et développeurs : probabilités 1 / N / 2, buts attend
 | `GET /reliability` | Historique public de fiabilité |
 | `GET /articles` | Avant-matchs complets en français et en anglais, avec image |
 
-👉 [Documentation et accès anticipé](https://jeremstyke.github.io/ai-football-predictor/fr/api/?src=github)
+👉 [Documentation et accès anticipé](https://aifootpredictor.com/fr/api/?src=github)
 
 ---
 
