@@ -75,7 +75,7 @@ function sendSab(){post({afpSab:sab()})}
 app.addEventListener("load",function(){sendSab();setTimeout(sendSab,800)});addEventListener("resize",sendSab);
 function u8(b){b=b.replace(/-/g,"+").replace(/_/g,"/");b+="===".slice((b.length+3)%4);var r=atob(b),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a}
 function save(list){return navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription().then(function(s){return s||r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(V)})})}).then(function(s){
- return Promise.all(list.map(function(x){return fetch(RPC,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify({p_sub:s.toJSON(),p_lang:FR?"fr":"en",p_n:x.n,p_on:!!x.on})}).then(function(r){return r.json()})}))})}
+ return Promise.all(list.map(function(x){return fetch(x.c?RPC.replace("afp_webpush_sub","afp_webpush_comp"):RPC,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify({p_sub:s.toJSON(),p_lang:FR?"fr":"en",p_n:x.c?undefined:x.n,p_code:x.c||undefined,p_on:!!x.on})}).then(function(r){return r.json()})}))})}
 function close(){box.classList.remove("on")}
 box.addEventListener("click",function(e){if(e.target===box)close()});
 function tgBtn(n){return '<a class="b t" target="_blank" rel="noopener" href="https://t.me/ai_football_predictorbot/app?startapp=m'+(+n||0)+'">✈️ '+(FR?"Recevoir les alertes sur Telegram":"Get the alerts on Telegram")+'</a>'}
@@ -95,12 +95,12 @@ function blocked(n){var inst=IOS&&!SA;
  +steps().map(function(s){return "<li>"+s+"</li>"}).join("")+'</ol>'+(FR?'<p style="margin:-6px 0 6px">Ou plus simple :</p>':'<p style="margin:-6px 0 6px">Or simpler:</p>')+tgBtn(n)+'<button class="g" data-x>'+(FR?"Fermer":"Close")+'</button>')}
 function done(){close();var l=wait.slice();wait=[];if(!l.length)return;save(l).then(function(r){var ok=r.some(function(x){return x&&x.ok});if(l.some(function(x){return x.on}))post({afpPushRes:{ok:ok}})}).catch(function(){})}
 addEventListener("message",function(e){if(e.source!==app.contentWindow)return;var d=e.data&&e.data.afpPush;if(!d)return;
- var it={n:+d.n,on:!!d.on};
+ var it={n:+d.n||0,c:d.c||null,on:!!d.on};
  if(!OK){if(d.on&&d.u)blocked(it.n);return}
  if(Notification.permission==="granted"){wait.push(it);done();return}
  if(!d.on)return;
  if(!d.u)return;
- wait=wait.filter(function(x){return x.n!==it.n});wait.push(it);
+ wait=wait.filter(function(x){return x.n!==it.n||x.c!==it.c});wait.push(it);
  if(Notification.permission==="denied")blocked(it.n);else ask(it.n)});
 })();
 </script>
