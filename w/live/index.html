@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Football Predictor - live widget</title><meta name="robots" content="noindex">
+<style>
+:root{--bg:#06090e;--panel:#0c121b;--line:#1b2533;--txt:#e6edf6;--mut:#7d8ba1;--acc:#3ee0a8;--acc2:#4cc3ff;--red:#ff5c6c;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.light{--bg:#ffffff;--panel:#f6f8fb;--line:#e3e8ef;--txt:#0d1520;--mut:#5b6878;--acc:#0f9d6e;--acc2:#1478c8;--red:#d62f43}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.4 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.w{border:1px solid var(--line);background:var(--bg);max-width:520px}
+.hd{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.hd b{font-size:13.5px;display:flex;align-items:center;gap:7px}.hd a{font:600 10.5px var(--mono);color:var(--mut);text-decoration:none}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 var(--red);animation:pl 1.6s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(255,92,108,.6)}70%{box-shadow:0 0 0 7px rgba(255,92,108,0)}100%{box-shadow:0 0 0 0 rgba(255,92,108,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}.bar i{transition:none}}
+.m{display:block;padding:12px;border-bottom:1px dashed var(--line);color:inherit;text-decoration:none}
+.m:hover{background:var(--panel)}
+.m.on{border-left:3px solid var(--red);padding-left:9px}
+.m.s{border-left:3px solid var(--acc);padding-left:9px;background:linear-gradient(90deg,rgba(62,224,168,.08),transparent 60%)}
+.top{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--mut)}.top .lv{color:var(--red);font-weight:700}.top .ft{color:var(--txt)}
+.sc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:8px 0 6px}
+.tm{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;min-width:0}.tm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tm.r{justify-content:flex-end;text-align:right}
+.tm img{width:22px;height:22px;object-fit:contain;flex:none}
+.g{font:800 22px var(--mono);letter-spacing:.04em;text-align:center;min-width:64px}.g.ns{font-size:13px;font-weight:600;color:var(--mut)}
+.ev{font-size:11.5px;color:var(--mut);display:flex;justify-content:space-between;gap:8px}.ev div{flex:1}.ev div:last-child{text-align:right}
+.lab{display:flex;justify-content:space-between;font:10.5px var(--mono);color:var(--mut);margin-top:9px}
+.bar{display:flex;height:7px;gap:2px;margin-top:4px}.bar i{display:block;height:100%;background:var(--line);transition:width .8s ease}.bar i.k{background:var(--acc)}
+.p{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--mut);margin-top:4px}.p .k{color:var(--acc);font-weight:700}
+.st{display:grid;grid-template-columns:auto 1fr auto;gap:2px 8px;font:11px var(--mono);color:var(--mut);margin-top:8px}.st b{color:var(--txt);font-weight:600}.st span:nth-child(3n+2){text-align:center}.st span:nth-child(3n){text-align:right}
+.mv{font:11px var(--mono);margin-top:5px;color:var(--mut)}.mv b{color:var(--acc)}
+.cw{margin:10px 12px 4px}.ct{font-size:12.5px;color:var(--mut);text-align:center;margin-bottom:8px}.ct b{color:var(--txt)}.cb{display:flex;gap:8px}
+.cta{flex:1;display:block;padding:10px 6px;text-align:center;background:var(--acc);color:#03110b;font-weight:700;font-size:13px;text-decoration:none;border:1px solid var(--acc)}.cta.o{background:transparent;color:var(--txt);border-color:var(--line)}
+.fo{display:flex;justify-content:space-between;gap:8px;padding:8px 12px 10px;font-size:10.5px;color:var(--mut)}.fo a{color:var(--acc2);text-decoration:none}
+.e{padding:16px 12px;color:var(--mut);font-size:13px}
+</style></head><body>
+<div class="w" id="w"><div class="e">…</div></div>
+<script>
+(function(){
+var q=new URLSearchParams(location.search),fr=(q.get("lang")||navigator.language||"en").slice(0,2)=="fr",
+lg=q.get("lg")||"",team=q.get("team")||"",lim=Math.min(12,Math.max(1,+q.get("n")||4)),src="src_wlive"+(q.get("s")?"_"+q.get("s").replace(/[^a-z0-9]/gi,"").slice(0,20):"");
+if(q.get("theme")=="light")document.documentElement.classList.add("light");document.documentElement.lang=fr?"fr":"en";
+var SITE="https://aifootpredictor.com/"+(fr?"fr/":"")+"?utm_source=widget_live",BOT="https://t.me/ai_football_predictorbot?start="+src,
+API="https://txvrlvcxfnylnrpdrxtt.supabase.co/rest/v1/rpc/",H={apikey:"sb_publishable_7aA-njoU5fU2ialO0ExwQQ_REHjAEIe","Content-Type":"application/json"};
+var hh=q.get("h")||"";if(!hh)try{hh=new URL(document.referrer).hostname}catch(e){}
+if(hh&&q.get("s")!=="app")fetch(API+"afp_widget_hit",{method:"POST",headers:H,body:JSON.stringify({h:hh,pg:(document.referrer||"").slice(0,300)})}).catch(function(){});
+var F={E0:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}",F1:"🇫🇷",SP1:"🇪🇸",I1:"🇮🇹",D1:"🇩🇪",CL:"🏆",P1:"🇵🇹",N1:"🇳🇱",SC0:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",B1:"🇧🇪",T1:"🇹🇷",G1:"🇬🇷",BRA:"🇧🇷",ARG:"🇦🇷",ROU:"🇷🇴",NOR:"🇳🇴",HR:"🇭🇷",RS:"🇷🇸",UA:"🇺🇦",SA:"🇸🇦",CY:"🇨🇾",BG:"🇧🇬",FAC:"🏆",EFL:"🏆",DFB:"🏆",CDR:"🏆",SCC:"🏆",SLC:"🏆",TDP:"🏆"};
+var LIVE={"1H":1,"2H":1,HT:1,ET:1,BT:1,P:1,LIVE:1,SUSP:1,INT:1},FIN={FT:1,AET:1,PEN:1,CANC:1,ABD:1,AWD:1,WO:1};
+var D=null,T0=0;
+function es(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function pc(x){return Math.round(x*100)+(fr?" %":"%")}
+function hm(t){return new Date(t).toLocaleTimeString(fr?"fr-FR":"en-GB",{hour:"2-digit",minute:"2-digit"})}
+function size(){try{parent.postMessage({afp:1,h:document.getElementById("w").offsetHeight+2},"*")}catch(e){}}
+// minute now: last known minute + time since the last update (capped per half), so the clock and the probability keep moving between updates
+function minute(m){if(!LIVE[m.st])return null;if(m.st=="HT")return 45;var since=(Date.now()-T0)/60000+Math.max(0,(Date.parse(D.now)-Date.parse(m.up||D.now))/60000),el=(m.el||0)+since;
+ return m.st=="1H"?Math.min(el,45+6):m.st=="2H"?Math.min(el,90+8):el}
+function pois(k,l){var q=Math.exp(-l);for(var i=1;i<=k;i++)q*=l/i;return q}
+// live probability: our pre-match expected goals scaled to the time left, added to the current score (result after 90 minutes)
+function probs(m){if(m.st&&FIN[m.st]&&m.hg!=null){var h=m.fh!=null?m.fh:m.hg,a=m.fa!=null?m.fa:m.ag;return[h>a?1:0,h==a?1:0,h<a?1:0]}
+ if(!LIVE[m.st]||m.xh==null||m.hg==null||/ET|BT|P/.test(m.st))return[+m.ph,+m.pd,+m.pa];
+ var mi=Math.min(90,minute(m)||0),r=Math.max(0,(90-mi)/90),lh=m.xh*r,la=m.xa*r,ph=0,pd=0,pa=0;
+ for(var x=0;x<=10;x++)for(var y=0;y<=10;y++){var p=pois(x,lh)*pois(y,la),H=m.hg+x,A=m.ag+y;if(H>A)ph+=p;else if(H==A)pd+=p;else pa+=p}
+ var t=ph+pd+pa;return[ph/t,pd/t,pa/t]}
+function stl(m){var mi=minute(m),L=fr?{HT:"Mi-temps",ET:"Prolongation",BT:"Pause",P:"Tirs au but",FT:"Terminé",AET:"Terminé a.p.",PEN:"Terminé t.a.b.",CANC:"Annulé",ABD:"Arrêté",SUSP:"Interrompu",INT:"Interrompu",PST:"Reporté"}:{HT:"Half time",ET:"Extra time",BT:"Break",P:"Penalties",FT:"Full time",AET:"Full time a.e.t.",PEN:"Full time, pens",CANC:"Cancelled",ABD:"Abandoned",SUSP:"Suspended",INT:"Interrupted",PST:"Postponed"};
+ if(m.st=="1H"||m.st=="2H")return '<span class="lv">● '+Math.floor(mi)+"'</span>";if(LIVE[m.st])return '<span class="lv">● '+(L[m.st]||"LIVE")+'</span>';
+ if(FIN[m.st])return '<span class="ft">'+(L[m.st]||m.st)+'</span>';if(m.st=="PST")return L.PST;var dm=Math.round((Date.parse(m.ko)-Date.now())/60000);return dm>0&&dm<180?(fr?"dans ":"in ")+(dm>=60?Math.floor(dm/60)+" h "+String(dm%60).padStart(2,"0"):dm+" min"):(fr?"à venir":"upcoming")}
+function evs(m,s){return (m.ev||[]).filter(function(e){return e.side==s}).map(function(e){return (e.kind=="red"?"🟥 ":"⚽ ")+es(e.player.split(" ").slice(-1)[0])+" "+e.min+(e.extra?"+"+e.extra:"")+"'"+(e.kind=="pen"?" (p)":e.kind=="og"?(fr?" (csc)":" (og)"):"")}).join("<br>")}
+function card(m){var on=!!LIVE[m.st],ns=!m.st||m.st=="NS"||m.st=="TBD",P=probs(m),k=P.indexOf(Math.max.apply(null,P)),S=m.ss,pre=[+m.ph,+m.pd,+m.pa],pk=m.pk=="H"?0:m.pk=="D"?1:2;
+ var logo=function(u){return u?'<img src="'+es(u)+'" alt="" loading="lazy">':""};
+ var h='<a class="m'+(on?" on":m.s?" s":"")+'" href="'+SITE+"&tab=m"+m.n+'" target="_blank" rel="noopener"><div class="top"><span>'+(F[m.lg]||"⚽")+(m.s?' <b style="color:var(--acc);font-weight:700">65'+(fr?" %":"%")+'+</b>':"")+'</span>'+stl(m)+'</div>'
+ +'<div class="sc"><div class="tm">'+logo(m.hl)+'<span>'+es(m.h)+'</span></div><div class="g'+(ns?" ns":"")+'">'+(ns?hm(m.ko):(m.hg!=null?m.hg:0)+" - "+(m.ag!=null?m.ag:0))+'</div><div class="tm r"><span>'+es(m.a)+'</span>'+logo(m.al)+'</div></div>';
+ if(!ns&&(m.ev||[]).length)h+='<div class="ev"><div>'+evs(m,"h")+'</div><div>'+evs(m,"a")+'</div></div>';
+ h+='<div class="lab"><span>'+(on?(fr?"Probabilités en direct":"Live probabilities"):FIN[m.st]?(fr?"Résultat":"Result"):(fr?"Probabilités avant match":"Pre-match probabilities"))+'</span><span>'+(fr?"résultat à 90 min":"result after 90 min")+'</span></div>'
+ +'<div class="bar">'+P.map(function(v,i){return '<i class="'+(i==k?"k":"")+'" style="width:'+Math.max(2,v*100)+'%"></i>'}).join("")+'</div>'
+ +'<div class="p"><span class="'+(k==0?"k":"")+'">1 · '+pc(P[0])+'</span><span class="'+(k==1?"k":"")+'">'+(fr?"N":"X")+" · "+pc(P[1])+'</span><span class="'+(k==2?"k":"")+'">2 · '+pc(P[2])+'</span></div>';
+ if(on)h+='<div class="mv">'+(fr?"Le plus probable au départ : ":"Most likely at kickoff: ")+pc(pre[pk])+" → <b>"+pc(P[pk])+'</b></div>';
+ if(!ns&&S&&S.h&&S.a){var row=function(l,a,b){return '<span><b>'+(a==null?"-":a)+'</b></span><span>'+l+'</span><span><b>'+(b==null?"-":b)+'</b></span>'};
+  h+='<div class="st">'+row(fr?"Possession":"Possession",S.h.poss!=null?S.h.poss+"%":null,S.a.poss!=null?S.a.poss+"%":null)+row(fr?"Tirs (cadrés)":"Shots (on target)",S.h.shots!=null?S.h.shots+" ("+(S.h.sot||0)+")":null,S.a.shots!=null?S.a.shots+" ("+(S.a.sot||0)+")":null)+row("Corners",S.h.corners,S.a.corners)+row(fr?"Cartons jaunes":"Yellow cards",S.h.yellow,S.a.yellow)+'</div>'}
+ return h+'</a>'}
+function draw(){if(!D)return;var M=D.m||[],nl=M.filter(function(m){return LIVE[m.st]}).length;
+ var h='<div class="hd"><b>'+(nl?'<span class="dot"></span>':"⚽")+" "+(team?es(team)+" · ":"")+(fr?(nl?nl+" match"+(nl>1?"s":"")+" en direct":"Matchs du jour en direct"):(nl?nl+" live match"+(nl>1?"es":""):"Today's matches live"))+'</b><a href="'+SITE+'" target="_blank" rel="noopener">AI FOOTBALL PREDICTOR</a></div>';
+ if(!M.length)h+='<div class="e">'+(fr?"Pas de match dans les prochaines heures. Toutes les probabilités sont sur le site.":"No match in the next hours. Every probability is on the website.")+'</div>';
+ h+=M.map(card).join("");
+ h+='<div class="cw"><div class="ct">🔴 '+(fr?"<b>Tous les matchs en direct</b> et leurs probabilités":"<b>Every live match</b> and its probabilities")+'</div><div class="cb"><a class="cta" href="'+SITE+'&tab=live" target="_blank" rel="noopener">🌐 '+(fr?"Sur le site":"On the website")+'</a></div></div>';
+ h+='<a href="https://sorare.pxf.io/c/3023254/3202039/12209" target="_blank" rel="noopener sponsored" style="display:block;margin:8px 12px 0;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:12px;color:inherit;text-decoration:none">⚽ '+(fr?"Fantasy foot : joue sur <b>Sorare</b> avec de vrais joueurs ›":"Fantasy football: play on <b>Sorare</b> with real players ›")+'</a>';
+ h+='<div class="fo"><span>'+(fr?"Probabilités, pas des certitudes. 18+":"Probabilities, not certainty. 18+")+'</span><a href="'+SITE+'&tab=rec" target="_blank" rel="noopener">'+(fr?"Fiabilité vérifiée ›":"Verified reliability ›")+'</a></div>';
+ document.getElementById("w").innerHTML=h;size()}
+function load(){fetch(API+"afp_widget_live",{method:"POST",headers:H,body:JSON.stringify({lg:lg||null,lim:lim,team:team||null})}).then(function(r){return r.json()}).then(function(d){D=d;T0=Date.now();draw()}).catch(function(){if(!D){document.getElementById("w").innerHTML='<div class="e"><a href="'+SITE+'" target="_blank">AI Football Predictor</a></div>';size()}})}
+load();setInterval(load,60000);setInterval(function(){if(D&&(D.m||[]).some(function(m){return LIVE[m.st]}))draw()},15000);
+addEventListener("resize",size);
+})();
+</script></body></html>

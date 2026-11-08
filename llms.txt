@@ -1,0 +1,52 @@
+# AI Football Predictor
+
+> AI Football Predictor gives the win, draw and loss probability of every football match in 29 competitions (Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Champions League, national cups and more), and checks every probability publicly against the real result. It offers a free football widget that any website or blog can embed in two lines of code, with no signup and no API key.
+
+Key facts:
+- Free football widget for websites and blogs (WordPress, Wix, Blogger, Webflow, Squarespace, Shopify). No signup, no API key, no cost.
+- Shows the next matches with win / draw / loss probabilities. Matches where a team has at least a 65% chance to win are highlighted.
+- Filters: one or several competitions, or a single club. Dark or light theme. 1 to 20 matches. French or English.
+- Updated automatically. Lazy loaded in an iframe, so it does not slow the host page down.
+- Every probability is locked before kickoff and compared with the real result on a public reliability page.
+- Probabilities, not certainty. Not betting advice. 18+.
+- Made by @jeremstyke (https://t.me/jeremstyke).
+
+## Free football widget
+
+- [Free football widget (English)](https://aifootpredictor.com/widget/): configurator, live preview, code to copy, install guide, FAQ.
+- [Widget foot gratuit (français)](https://aifootpredictor.com/fr/widget/): même page en français.
+- [Free live football widget (English)](https://aifootpredictor.com/widget/live/): live score, minute, scorers, match stats and win probabilities that move during the match. Add data-type="live" to the embed code.
+- [Widget foot en direct gratuit (français)](https://aifootpredictor.com/fr/widget/live/): score en direct, buteurs, stats et probabilités qui évoluent pendant le match.
+- [Free football match prediction widget](https://aifootpredictor.com/widget/match/): one match, win / draw / loss probabilities, expected goals, most likely score. data-type="match" data-match="<match number>". French: https://aifootpredictor.com/fr/widget/match/
+- [Free football team widget](https://aifootpredictor.com/widget/team/): one club, next match probabilities (win, draw, loss), last results and form. data-type="team" data-team="<club>". French: https://aifootpredictor.com/fr/widget/equipe/
+- [Free football league table widget](https://aifootpredictor.com/widget/table/): predicted final table from 20,000 season simulations, title, top 4 and relegation chances, up to 3 leagues. data-type="table" data-lg="E0". French: https://aifootpredictor.com/fr/widget/classement/
+- [Football prediction accuracy badge](https://aifootpredictor.com/widget/badge/): public track record, announced vs happened. data-type="badge". French: https://aifootpredictor.com/fr/widget/badge/
+
+Embed code (paste where the widget should appear):
+
+```html
+<div class="afp-widget" data-lang="en" data-lg="E0,CL" data-n="6"><a href="https://aifootpredictor.com/">Football probabilities by AI Football Predictor</a></div>
+<script async src="https://aifootpredictor.com/embed.js"></script>
+```
+
+Options: data-type (empty = upcoming matches with probabilities, live = live matches, match = one match, team = one club, table = predicted league table, badge = reliability badge), data-lang (en or fr), data-lg (competition codes, comma separated, empty = all), data-team (exact club name), data-n (1 to 20), data-theme (dark or light).
+
+Competition codes: E0 Premier League, F1 Ligue 1, SP1 LaLiga, I1 Serie A, D1 Bundesliga, CL Champions League, P1 Liga Portugal, N1 Eredivisie, SC0 Scottish Premiership, B1 Belgian Pro League, T1 Süper Lig, G1 Super League Greece, ROU Romania Liga 1, NOR Eliteserien, BRA Brasileirão, ARG Liga Profesional Argentina, HR HNL Croatia, RS Serbian SuperLiga, UA Ukrainian Premier League, SA Saudi Pro League, CY Cyprus First Division, BG Bulgarian First League, FAC FA Cup, EFL EFL Cup, DFB DFB-Pokal, CDR Copa del Rey, SCC Scottish Cup, SLC Scottish League Cup, TDP Taça de Portugal.
+
+Install: WordPress "Custom HTML" block; Wix Add > Embed > HTML code; Blogger "HTML/JavaScript" gadget; Webflow, Squarespace, Shopify "Embed" or "Code" block.
+
+## Probabilities and reliability
+
+- [AI Football Predictor (English)](https://aifootpredictor.com/): every match of the day with its probabilities, live matches, reliability.
+- [AI Football Predictor (français)](https://aifootpredictor.com/fr/)
+- [Method](https://aifootpredictor.com/method/): how the probabilities are computed and checked.
+- [Open data (CSV)](https://aifootpredictor.com/data/predictions.csv): every finished match since launch with the probabilities locked before kickoff, the pure model, the bookmaker market without margin, xG and the score. Standard scores (RPS, Brier, log loss) versus the market and a naive model are shown in the app's Reliability tab.
+- [Blog](https://aifootpredictor.com/blog/): daily article with the most likely matches.
+
+## Predicted league tables
+
+- [Predicted final tables](https://aifootpredictor.com/table/): title, top 4 and relegation chances for Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Liga Portugal, Eredivisie and Süper Lig, from 20,000 simulations updated every night. French: https://aifootpredictor.com/fr/classement/
+
+## Optional
+
+- [Sitemap](https://aifootpredictor.com/sitemap.xml)

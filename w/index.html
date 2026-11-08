@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Football Predictor - widget</title><meta name="robots" content="noindex">
+<style>
+:root{--bg:#06090e;--panel:#0c121b;--line:#1b2533;--txt:#e6edf6;--mut:#7d8ba1;--acc:#3ee0a8;--acc2:#4cc3ff;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.light{--bg:#ffffff;--panel:#f6f8fb;--line:#e3e8ef;--txt:#0d1520;--mut:#5b6878;--acc:#0f9d6e;--acc2:#1478c8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.4 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.w{border:1px solid var(--line);background:var(--bg);max-width:520px}
+.hd{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.hd b{font-size:13.5px}.hd a{font:600 10.5px var(--mono);color:var(--mut);text-decoration:none}
+.m{padding:10px 12px;border-bottom:1px dashed var(--line);display:block;color:inherit;text-decoration:none}
+.m:hover{background:var(--panel)}
+.t{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}.t span:last-child{font:11px var(--mono);color:var(--mut);white-space:nowrap}
+.b{display:flex;height:6px;margin-top:7px;gap:2px}.b i{display:block;height:100%;background:var(--line)}.b i.k{background:var(--acc)}
+.p{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--mut);margin-top:4px}.p .k{color:var(--acc);font-weight:700}
+.cw{margin:10px 12px 4px}.ct{font-size:12.5px;color:var(--mut);text-align:center;margin-bottom:8px}.ct b{color:var(--txt)}.cb{display:flex;gap:8px}
+.cta{flex:1;display:block;padding:10px 6px;text-align:center;background:var(--acc);color:#03110b;font-weight:700;font-size:13px;text-decoration:none;border:1px solid var(--acc)}.cta.o{background:transparent;color:var(--txt);border-color:var(--line)}
+.ft{display:flex;justify-content:space-between;gap:8px;padding:8px 12px 10px;font-size:10.5px;color:var(--mut)}.ft a{color:var(--acc2);text-decoration:none}
+.e{padding:16px 12px;color:var(--mut);font-size:13px}
+.m.s{border-left:3px solid var(--acc);padding-left:9px;background:linear-gradient(90deg,rgba(62,224,168,.10),transparent 70%)}
+.g{display:inline-block;font:700 9.5px var(--mono);color:#03110b;background:var(--acc);padding:1px 5px;margin-left:6px;vertical-align:1px}
+.lg{padding:6px 12px 0;font-size:10.5px;color:var(--mut)}.lg .g{margin:0 4px 0 0}
+</style></head><body>
+<div class="w" id="w"><div class="e">…</div></div>
+<script>
+(function(){
+var q=new URLSearchParams(location.search),fr=(q.get("lang")||navigator.language||"en").slice(0,2)=="fr",
+lg=q.get("lg")||"",team=q.get("team")||"",lim=Math.min(20,Math.max(1,+q.get("n")||6)),src="src_widget"+(q.get("s")?"_"+q.get("s").replace(/[^a-z0-9]/gi,"").slice(0,20):"");
+if(q.get("theme")=="light")document.documentElement.classList.add("light");document.documentElement.lang=fr?"fr":"en";
+var SITE="https://aifootpredictor.com/"+(fr?"fr/":"")+"?utm_source=widget",BOT="https://t.me/ai_football_predictorbot?start="+src;
+function mUrl(n){return SITE+"&tab=m"+n}
+var F={E0:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}",F1:"🇫🇷",SP1:"🇪🇸",I1:"🇮🇹",D1:"🇩🇪",CL:"🏆",P1:"🇵🇹",N1:"🇳🇱",SC0:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",B1:"🇧🇪",T1:"🇹🇷",G1:"🇬🇷",BRA:"🇧🇷",ARG:"🇦🇷",ROU:"🇷🇴",NOR:"🇳🇴",HR:"🇭🇷",RS:"🇷🇸",UA:"🇺🇦",SA:"🇸🇦",CY:"🇨🇾",BG:"🇧🇬",FAC:"🏆",EFL:"🏆",DFB:"🏆",CDR:"🏆",SCC:"🏆",SLC:"🏆",TDP:"🏆"};
+function es(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function pc(x){return Math.round(x*100)+(fr?" %":"%")}
+function hm(t){var d=new Date(t),td=new Date();var s=d.toLocaleTimeString(fr?"fr-FR":"en-GB",{hour:"2-digit",minute:"2-digit"});return (d.toDateString()==td.toDateString()?"":(fr?"demain ":"tomorrow "))+s}
+function size(){try{parent.postMessage({afp:1,h:document.getElementById("w").offsetHeight+2},"*")}catch(e){}}
+var hh=q.get("h")||"";if(!hh)try{hh=new URL(document.referrer).hostname}catch(e){}
+if(hh&&q.get("s")!=="app")fetch("https://txvrlvcxfnylnrpdrxtt.supabase.co/rest/v1/rpc/afp_widget_hit",{method:"POST",headers:{apikey:"sb_publishable_7aA-njoU5fU2ialO0ExwQQ_REHjAEIe","Content-Type":"application/json"},body:JSON.stringify({h:hh,pg:(document.referrer||"").slice(0,300)})}).catch(function(){});
+fetch("https://txvrlvcxfnylnrpdrxtt.supabase.co/rest/v1/rpc/afp_widget2",{method:"POST",headers:{apikey:"sb_publishable_7aA-njoU5fU2ialO0ExwQQ_REHjAEIe","Content-Type":"application/json"},body:JSON.stringify({lg:lg||null,lim:lim,team:team||null})}).then(function(r){return r.json()}).then(function(d){
+ var h='<div class="hd"><b>⚽ '+(team?es(team)+" · "+(fr?"probabilités":"probabilities"):(fr?"Probabilités des matchs":"Match probabilities"))+'</b><a href="'+SITE+'" target="_blank" rel="noopener">AI FOOTBALL PREDICTOR</a></div>';
+ var M=d.m||[];if(M.some(function(m){return m.s}))h+='<div class="lg"><em class="g">65'+(fr?" %":"%")+'+</em>'+(fr?"une équipe a au moins 65 % de chances de gagner":"a team has at least a 65% chance to win")+'</div>';if(!M.length)h+='<div class="e">'+(fr?"Pas de match dans les prochaines heures.":"No match in the next hours.")+'</div>';
+ h+=M.map(function(m){var a=[m.ph,m.pd,m.pa],k=a.indexOf(Math.max.apply(null,a));
+  return '<a class="m'+(m.s?" s":"")+'" href="'+mUrl(m.n)+'" target="_blank" rel="noopener"><div class="t"><span>'+(F[m.lg]||"⚽")+" "+es(m.h)+" - "+es(m.a)+(m.s?'<em class="g">65'+(fr?" %":"%")+'+</em>':'')+'</span><span>'+hm(m.ko)+'</span></div><div class="b">'+a.map(function(v,i){return '<i class="'+(i==k?"k":"")+'" style="width:'+(v*100)+'%"></i>'}).join("")+'</div><div class="p"><span class="'+(k==0?"k":"")+'">1 · '+pc(m.ph)+'</span><span class="'+(k==1?"k":"")+'">'+(fr?"N":"X")+" · "+pc(m.pd)+'</span><span class="'+(k==2?"k":"")+'">2 · '+pc(m.pa)+'</span></div></a>'}).join("");
+ h+='<div class="cw"><div class="ct">📊 '+(d.top?(fr?"<b>"+d.top+" matchs à 65 %+</b> et toutes les probabilités":"<b>"+d.top+" matches at 65%+</b> and every probability"):(fr?"Toutes les probabilités du jour":"Every probability of the day"))+'</div><div class="cb"><a class="cta" href="'+SITE+'" target="_blank" rel="noopener">🌐 '+(fr?"Sur le site":"On the website")+'</a></div></div>';
+ h+='<a href="https://sorare.pxf.io/c/3023254/3202039/12209" target="_blank" rel="noopener sponsored" style="display:block;margin:8px 12px 0;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:12px;color:inherit;text-decoration:none">⚽ '+(fr?"Fantasy foot : joue sur <b>Sorare</b> avec de vrais joueurs ›":"Fantasy football: play on <b>Sorare</b> with real players ›")+'</a>';
+ h+='<div class="ft"><span>'+(fr?"Probabilités, pas des certitudes. 18+":"Probabilities, not certainty. 18+")+'</span><a href="'+SITE+'" target="_blank" rel="noopener">'+(fr?"Fiabilité vérifiée ›":"Verified reliability ›")+'</a></div>';
+ document.getElementById("w").innerHTML=h;size()}).catch(function(){document.getElementById("w").innerHTML='<div class="e"><a href="'+SITE+'" target="_blank">AI Football Predictor</a></div>';size()});
+addEventListener("resize",size);
+})();
+</script></body></html>
