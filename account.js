@@ -6,8 +6,8 @@
   var CID = "377977599477-rt1evcbjtjovl4meur2skhrjmpc27lmb.apps.googleusercontent.com";
   var APP = "https://afp-app-production.up.railway.app";
   var FR = (document.documentElement.lang || "").slice(0, 2) === "fr" || location.pathname.indexOf("/fr/") === 0;
-  var T = FR ? { in: "Se connecter", out: "Se déconnecter", title: "Ton compte AI Football Predictor", why: "Garde tes widgets, ton club et tes équipes favorites, les matchs et championnats que tu suis, sur tous tes appareils.", hi: "Connecté", err: "La connexion n'a pas marché. Réessaie.", del: "Supprimer mon compte", delq: "Supprimer ton compte et tout ce qui est sauvegardé ? C'est définitif.", priv: "Confidentialité", close: "Fermer" }
-               : { in: "Sign in", out: "Sign out", title: "Your AI Football Predictor account", why: "Keep your widgets, your club and favourite teams, the matches and leagues you follow, on all your devices.", hi: "Signed in", err: "Sign-in did not work. Please try again.", del: "Delete my account", delq: "Delete your account and everything saved? This cannot be undone.", priv: "Privacy", close: "Close" };
+  var T = FR ? { in: "Se connecter", out: "Se déconnecter", title: "Ton compte AI Football Predictor", why: "Garde tes widgets, ton club et tes équipes favorites, les matchs et championnats que tu suis, sur tous tes appareils.", hi: "Connecté", err: "La connexion n'a pas marché. Réessaie.", del: "Supprimer mon compte", delq: "Supprimer ton compte et tout ce qui est sauvegardé ? C'est définitif.", priv: "Confidentialité", close: "Fermer", link: "Lier mon compte Telegram", tgok: "Compte Telegram lié : jeu, Premium et favoris communs" }
+               : { in: "Sign in", out: "Sign out", title: "Your AI Football Predictor account", why: "Keep your widgets, your club and favourite teams, the matches and leagues you follow, on all your devices.", hi: "Signed in", err: "Sign-in did not work. Please try again.", del: "Delete my account", delq: "Delete your account and everything saved? This cannot be undone.", priv: "Privacy", close: "Close", link: "Link my Telegram account", tgok: "Telegram account linked: game, Premium and favourites shared" };
   function rd(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function wr(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var S = rd("aifp_acct"), D = rd("aifp_acct_data") || {}, frames = [];
@@ -30,7 +30,7 @@
   function done(r) {
     if (!r || !r.ok) { msg(T.err); return; }
     S = { token: r.token, user: r.user }; D = r.data || {}; wr("aifp_acct", S); wr("aifp_acct_data", D);
-    close(); paint(); tell(); fire();
+    close(); paint(); tell(); fire(); refresh();
   }
   function fire() { try { dispatchEvent(new CustomEvent("aifp-acct", { detail: { user: S && S.user, data: D } })); } catch (e) {} }
   function logout() {
@@ -42,6 +42,10 @@
   function del() {
     if (!S || !confirm(T.delq)) return;
     call("delete", {}).then(function () { logout(); }).catch(function () {});
+  }
+  function link() { // 8 nov 2026 (Jeremy): "fusionner son compte avec celui de Telegram": the Mini App confirms the code
+    var w = null; try { w = window.open("about:blank", "_blank"); } catch (e) {}
+    call("linkcode", {}).then(function (r) { if (r && r.ok) { if (w) w.location.href = r.url; else location.href = r.url; close(); } else if (w) w.close(); }).catch(function () { if (w) w.close(); });
   }
   var gsi = null;
   function loadGsi(cb) {
@@ -58,15 +62,15 @@
   function close() { if (ov) { ov.remove(); ov = null; } }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function open() {
-    close();
+    close(); refresh();
     ov = document.createElement("div"); ov.className = "aifp-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true");
     var pv = FR ? "/fr/confidentialite/" : "/privacy/";
     ov.innerHTML = S
-      ? '<div class="aifp-md"><div class="u">' + (S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "") + '<div style="text-align:left"><b>' + esc((S.user && S.user.name) || T.hi) + '</b><br><small style="color:#9fb0c8">' + esc((S.user && S.user.email) || "") + '</small></div></div><p>' + T.why + '</p><button class="bt" data-a="out">' + T.out + '</button><div class="l"><button data-a="del">' + T.del + '</button><button data-a="x">' + T.close + "</button></div></div>"
+      ? '<div class="aifp-md"><div class="u">' + (S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "") + '<div style="text-align:left"><b>' + esc((S.user && S.user.name) || T.hi) + '</b><br><small style="color:#9fb0c8">' + esc((S.user && S.user.email) || "") + '</small></div></div><p>' + T.why + '</p>' + (S.tg ? '<p style="color:#2fd08a;margin:0 0 8px">✅ ' + T.tgok + '</p>' : '<button class="bt" data-a="link">🔗 ' + T.link + '</button>') + '<button class="bt" data-a="out">' + T.out + '</button><div class="l"><button data-a="del">' + T.del + '</button><button data-a="x">' + T.close + "</button></div></div>"
       : '<div class="aifp-md"><h2>' + T.title + "</h2><p>" + T.why + '</p><div class="g" id="aifp-g"></div><div class="e"></div><div class="l"><a href="https://aifootpredictor.com' + pv + '">' + T.priv + '</a><button data-a="x">' + T.close + "</button></div></div>";
     ov.addEventListener("click", function (e) {
       var a = e.target.getAttribute && e.target.getAttribute("data-a");
-      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del();
+      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del(); else if (a === "link") link();
     });
     document.body.appendChild(ov);
     if (!S) loadGsi(function () {
@@ -90,7 +94,7 @@
     paint();
   }
   // keep the saved data fresh (another device may have changed it)
-  function refresh() { if (S) call("me").then(function (r) { if (r && r.ok) { D = r.data || {}; wr("aifp_acct_data", D); if (r.user) { S.user = { name: r.user.name, email: r.user.email, picture: r.user.picture }; wr("aifp_acct", S); paint(); } fire(); } }).catch(function () {}); }
+  function refresh() { if (S) call("me").then(function (r) { if (r && r.ok) { D = r.data || {}; wr("aifp_acct_data", D); if (r.user) { S.user = { name: r.user.name, email: r.user.email, picture: r.user.picture }; S.tg = !!r.tg; wr("aifp_acct", S); paint(); } fire(); } }).catch(function () {}); }
   window.AIFPAcct = {
     user: function () { return S && S.user; }, token: function () { return S && S.token; }, open: open, logout: logout,
     get: function (k) { return D[k]; },
