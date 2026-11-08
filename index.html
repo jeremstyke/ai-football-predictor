@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://aifootpredictor.com/home.css">
 <!-- 7 nov 2026 (Jeremy): "le site doit être comme la mini app, avec toutes les données": the site shows the app itself (web version), same data -->
 </head><body>
-<iframe id="app" title="AI Football Predictor" allow="clipboard-write"></iframe>
+<iframe id="app" title="AI Football Predictor" allow="clipboard-write; web-share"></iframe>
 
 <div class="lp">
 <header class="lh"><div class="w"><a class="br" href="https://aifootpredictor.com/"><span class="mk">AIFP</span><span>AI Football Predictor</span></a><nav><a class="h" href="https://aifootpredictor.com/blog/">Blog</a><a class="h" href="https://aifootpredictor.com/method/">Method</a><a class="h" href="https://aifootpredictor.com/widget/">Widget</a><a class="h" href="https://aifootpredictor.com/api/">API</a><a href="https://aifootpredictor.com/fr/" hreflang="fr">FR</a><a class="bt s" href="?app=1" onclick="afpOpen(true);return false">Open the website</a></nav></div></header>
@@ -96,6 +96,10 @@ function blocked(n){var inst=IOS&&!SA;
  show('<div class="bell">'+(inst?"📲":"🔕")+'</div><h3>'+(inst?(FR?"Installe l’appli pour recevoir les alertes":"Install the app to get alerts"):(FR?"Les notifications sont bloquées":"Notifications are blocked"))+'</h3><p>'+(inst?(FR?"Sur iPhone, les notifications marchent seulement depuis l’icône sur l’écran d’accueil.":"On iPhone, notifications only work from the Home Screen icon."):(FR?"Ton téléphone a refusé les notifications pour AIFP. Pour les autoriser :":"Your phone blocked notifications for AIFP. To allow them:"))+'</p><ol>'
  +steps().map(function(s){return "<li>"+s+"</li>"}).join("")+'</ol>'+(FR?'<p style="margin:-6px 0 6px">Ou plus simple :</p>':'<p style="margin:-6px 0 6px">Or simpler:</p>')+tgBtn(n)+'<button class="g" data-x>'+(FR?"Fermer":"Close")+'</button>')}
 function done(){close();var l=wait.slice();wait=[];if(!l.length)return;save(l).then(function(r){var ok=r.some(function(x){return x&&x.ok});if(l.some(function(x){return x.on}))post({afpPushRes:{ok:ok}})}).catch(function(){})}
+/* 8 nov 2026: the share buttons of the app (iframe from another domain) cannot open the share sheet themselves: the page shares, or copies the link */
+addEventListener("message",function(e){if(e.source!==app.contentWindow)return;var s=e.data&&e.data.afpShare;if(!s)return;
+ function cp(){try{navigator.clipboard.writeText(s.t+" "+s.u).then(function(){post({afpShareRes:{copied:1}})},function(){post({afpShareRes:{copied:0}})})}catch(x){post({afpShareRes:{copied:0}})}}
+ if(navigator.share){navigator.share({title:"AI Football Predictor",text:s.t,url:s.u}).catch(function(x){if(!x||x.name!=="AbortError")cp()});return}cp()});
 addEventListener("message",function(e){if(e.source!==app.contentWindow)return;var d=e.data&&e.data.afpPush;if(!d)return;
  var it={n:+d.n||0,c:d.c||null,on:!!d.on};
  if(!OK){if(d.on&&d.u)blocked(it.n);return}
