@@ -77,13 +77,13 @@ function sendSab(){post({afpSab:sab()})}
 app.addEventListener("load",function(){sendSab();setTimeout(sendSab,800)});addEventListener("resize",sendSab);
 function u8(b){b=b.replace(/-/g,"+").replace(/_/g,"/");b+="===".slice((b.length+3)%4);var r=atob(b),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a}
 function save(list){return navigator.serviceWorker.ready.then(function(r){return r.pushManager.getSubscription().then(function(s){return s||r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(V)})})}).then(function(s){
- return Promise.all(list.map(function(x){return fetch(x.c?RPC.replace("afp_webpush_sub","afp_webpush_comp"):RPC,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify({p_sub:s.toJSON(),p_lang:FR?"fr":"en",p_n:x.c?undefined:x.n,p_code:x.c||undefined,p_on:!!x.on})}).then(function(r){return r.json()})}))})}
+ return Promise.all(list.map(function(x){return fetch(x.g?RPC.replace("afp_webpush_sub","afp_webpush_game"):x.c?RPC.replace("afp_webpush_sub","afp_webpush_comp"):RPC,{method:"POST",headers:{apikey:K,"Content-Type":"application/json"},body:JSON.stringify(x.g?{p_sub:s.toJSON(),p_lang:FR?"fr":"en",p_init:x.g,p_on:!!x.on}:{p_sub:s.toJSON(),p_lang:FR?"fr":"en",p_n:x.c?undefined:x.n,p_code:x.c||undefined,p_on:!!x.on})}).then(function(r){return r.json()})}))})}
 function close(){box.classList.remove("on")}
 box.addEventListener("click",function(e){if(e.target===box)close()});
 function tgBtn(n){return '<a class="b t" target="_blank" rel="noopener" href="https://t.me/ai_football_predictorbot/app?startapp=m'+(+n||0)+'">✈️ '+(FR?"Recevoir les alertes sur Telegram":"Get the alerts on Telegram")+'</a>'}
 function show(h){card.innerHTML=h;box.classList.add("on");var x=card.querySelector("[data-x]");if(x)x.onclick=close}
-function ask(n){
- show('<div class="bell">🔔</div><h3>'+(FR?"Recevoir les alertes de ce match":"Get alerts for this match")+'</h3><p>'+(FR?"Une notification au coup d’envoi, à chaque but, à la mi-temps et à la fin. Rien d’autre.":"A notification at kickoff, on every goal, at half time and full time. Nothing else.")+'</p>'
+function ask(n){var G=wait.some(function(x){return x.g});
+ show('<div class="bell">🔔</div><h3>'+(G?(FR?"Recevoir les alertes du jeu":"Get game alerts"):(FR?"Recevoir les alertes de ce match":"Get alerts for this match"))+'</h3><p>'+(G?(FR?"Un rappel quand tes choix du jour ne sont pas faits, ton résultat contre le modèle et le classement de la semaine. Rien d’autre.":"A reminder when your picks for the day are not made, your result against the model and the weekly leaderboard. Nothing else."):(FR?"Une notification au coup d’envoi, à chaque but, à la mi-temps et à la fin. Rien d’autre.":"A notification at kickoff, on every goal, at half time and full time. Nothing else."))+'</p>'
  +'<button class="p" id="afpgo">'+(FR?"Activer les notifications":"Turn on notifications")+'</button><button class="g" data-x>'+(FR?"Pas maintenant":"Not now")+'</button>');
  document.getElementById("afpgo").onclick=function(){this.disabled=true;this.textContent=FR?"Un instant…":"One moment…";
   Notification.requestPermission().then(function(p){if(p==="granted")done();else blocked(n)}).catch(function(){blocked(n)})}}
@@ -101,12 +101,12 @@ addEventListener("message",function(e){if(e.source!==app.contentWindow)return;va
  function cp(){try{navigator.clipboard.writeText(s.t+" "+s.u).then(function(){post({afpShareRes:{copied:1}})},function(){post({afpShareRes:{copied:0}})})}catch(x){post({afpShareRes:{copied:0}})}}
  if(navigator.share){navigator.share({title:"AI Football Predictor",text:s.t,url:s.u}).catch(function(x){if(!x||x.name!=="AbortError")cp()});return}cp()});
 addEventListener("message",function(e){if(e.source!==app.contentWindow)return;var d=e.data&&e.data.afpPush;if(!d)return;
- var it={n:+d.n||0,c:d.c||null,on:!!d.on};
+ var it={n:+d.n||0,c:d.c||null,on:!!d.on,g:d.g||null}; /* 9 nov 2026: g = game alerts (reminder, daily result, week) for the signed-in player */
  if(!OK){if(d.on&&d.u)blocked(it.n);return}
  if(Notification.permission==="granted"){wait.push(it);done();return}
  if(!d.on)return;
  if(!d.u)return;
- wait=wait.filter(function(x){return x.n!==it.n||x.c!==it.c});wait.push(it);
+ wait=wait.filter(function(x){return x.n!==it.n||x.c!==it.c||x.g!==it.g});wait.push(it);
  if(Notification.permission==="denied")blocked(it.n);else ask(it.n)});
 })();
 </script>
