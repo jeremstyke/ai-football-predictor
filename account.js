@@ -54,8 +54,8 @@
     gsi.addEventListener("load", cb);
   }
   var css = ".aifp-acb{display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.22);color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap}.aifp-acb img{width:22px;height:22px;border-radius:50%;display:block}.aifp-acb:focus-visible{outline:2px solid #4aa3ff;outline-offset:2px}"
-    + ".aifp-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(3,6,10,.72);display:flex;align-items:center;justify-content:center;padding:20px}.aifp-md{background:#0e1726;color:#e8eef7;border:1px solid #22324a;border-radius:16px;max-width:380px;width:100%;padding:22px 20px;font:15px/1.5 system-ui,-apple-system,sans-serif;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}"
-    + ".aifp-md h2{font-size:18px;margin:0 0 8px}.aifp-md p{margin:0 0 16px;color:#9fb0c8;font-size:14px}.aifp-md .g{display:flex;justify-content:center;min-height:44px}.aifp-md .e{color:#ff8a8a;font-size:13px;margin-top:10px;min-height:18px}.aifp-md .l{display:flex;justify-content:space-between;margin-top:16px;font-size:13px}.aifp-md .l a,.aifp-md .l button{color:#8fb8ff;background:none;border:0;font:inherit;cursor:pointer;padding:0}.aifp-md .u{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px}.aifp-md .u img{width:42px;height:42px;border-radius:50%}.aifp-md .bt{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #2b3f5c;background:#15233a;color:#e8eef7;font:inherit;font-weight:600;cursor:pointer;margin-top:8px}";
+    + ".aifp-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(3,6,10,.72);display:flex;align-items:center;justify-content:center;padding:20px}.aifp-md b,.aifp-md h2{color:#e8eef7}.aifp-md{max-height:90vh;overflow:auto;background:#0e1726;color:#e8eef7;border:1px solid #22324a;border-radius:16px;max-width:380px;width:100%;padding:22px 20px;font:15px/1.5 system-ui,-apple-system,sans-serif;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}"
+    + ".aifp-md h2{font-size:18px;margin:0 0 8px}.aifp-md p{margin:0 0 16px;color:#9fb0c8;font-size:14px}.aifp-md .g{display:flex;justify-content:center;min-height:44px}.aifp-md .e{color:#ff8a8a;font-size:13px;margin-top:10px;min-height:18px}.aifp-md .l{display:flex;justify-content:space-between;margin-top:16px;font-size:13px}.aifp-md .l a,.aifp-md .l button{color:#8fb8ff !important;background:none;border:0;font:inherit;cursor:pointer;padding:0}.aifp-md .u{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px}.aifp-md .u img{width:42px;height:42px;border-radius:50%}.aifp-md .bt{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid #2b3f5c !important;background:#15233a !important;color:#e8eef7 !important;font:inherit;font-weight:600;cursor:pointer;margin-top:8px}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   var ov = null;
   function msg(t) { var e = ov && ov.querySelector(".e"); if (e) e.textContent = t || ""; }
@@ -66,11 +66,11 @@
     ov = document.createElement("div"); ov.className = "aifp-ov"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true");
     var pv = FR ? "/fr/confidentialite/" : "/privacy/";
     ov.innerHTML = S
-      ? '<div class="aifp-md"><div class="u">' + (S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "") + '<div style="text-align:left"><b>' + esc((S.user && S.user.name) || T.hi) + '</b><br><small style="color:#9fb0c8">' + esc((S.user && S.user.email) || "") + '</small></div></div><p>' + T.why + '</p>' + (S.tg ? '<p style="color:#2fd08a;margin:0 0 8px">✅ ' + T.tgok + '</p>' : '<button class="bt" data-a="link">🔗 ' + T.link + '</button>') + '<button class="bt" data-a="out">' + T.out + '</button><div class="l"><button data-a="del">' + T.del + '</button><button data-a="x">' + T.close + "</button></div></div>"
+      ? '<div class="aifp-md"><div class="u">' + (S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "") + '<div style="text-align:left"><b>' + esc((S.user && S.user.name) || T.hi) + '</b><br><small style="color:#9fb0c8">' + esc((S.user && S.user.email) || "") + '</small></div></div><p>' + T.why + '</p>' + (S.tg ? '<p style="color:#2fd08a;margin:0 0 8px">✅ ' + T.tgok + '</p>' : '<button class="bt" data-a="link">🔗 ' + T.link + '</button>') + wlist() + '<button class="bt" data-a="out">' + T.out + '</button><div class="l"><button data-a="del">' + T.del + '</button><button data-a="x">' + T.close + "</button></div></div>"
       : '<div class="aifp-md"><h2>' + T.title + "</h2><p>" + T.why + '</p><div class="g" id="aifp-g"></div><div class="e"></div><div class="l"><a href="https://aifootpredictor.com' + pv + '">' + T.priv + '</a><button data-a="x">' + T.close + "</button></div></div>";
     ov.addEventListener("click", function (e) {
       var a = e.target.getAttribute && e.target.getAttribute("data-a");
-      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del(); else if (a === "link") link();
+      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del(); else if (a === "link") link(); else if (a === "wcopy" || a === "wdel") wact(a, Number(e.target.getAttribute("data-i")), e.target);
     });
     document.body.appendChild(ov);
     if (!S) loadGsi(function () {
@@ -100,5 +100,32 @@
     get: function (k) { return D[k]; },
     set: function (k, v) { D[k] = v; wr("aifp_acct_data", D); if (S) { var it = {}; it[k] = v; return call("data", { items: it }); } return Promise.resolve({ ok: false, local: true }); }
   };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { mount(); refresh(); }); else { mount(); refresh(); }
+  // 8 nov 2026 (Jeremy, "garder ses widgets déjà créés"): save the widget being configured, list them in the account window
+  var WT = FR ? { save: "💾 Garder ce widget", saved: "Gardé dans ton compte ✓", mine: "Mes widgets", none: "Aucun widget gardé pour l'instant : configure un widget puis touche « Garder ce widget ».", copy: "Copier", copied: "Copié ✓", rm: "Retirer" }
+              : { save: "💾 Keep this widget", saved: "Kept in your account ✓", mine: "My widgets", none: "No widget kept yet: set up a widget, then tap « Keep this widget ».", copy: "Copy", copied: "Copied ✓", rm: "Remove" };
+  var WN = { match: "Match", team: FR ? "Équipe" : "Team", table: FR ? "Classement" : "Table", live: "Live", articles: FR ? "Articles" : "Articles", badge: "Badge" };
+  function wl() { var a = D.afp_widgets; return Array.isArray(a) ? a : []; }
+  function wlabel(w) { return (WN[w.t] || w.t) + (w.team ? " · " + w.team : "") + (w.t === "table" && w.lg && w.lg.length ? " · " + w.lg.join(", ") : "") + (w.mlabel ? " · " + w.mlabel : "") + " · " + String(w.lang || "").toUpperCase() + " · " + (w.theme === "light" ? (FR ? "clair" : "light") : (FR ? "sombre" : "dark")); }
+  function wlist() {
+    var a = wl(), bs = "background:none;border:1px solid #2b3f5c;color:#8fb8ff;border-radius:8px;padding:4px 8px;font:inherit;font-size:12px;cursor:pointer";
+    return '<div style="text-align:left;margin:4px 0 12px"><b style="font-size:14px">' + WT.mine + "</b>" + (a.length ? a.map(function (w, i) { return '<div style="display:flex;align-items:center;gap:6px;border:1px solid #22324a;border-radius:10px;padding:8px 10px;margin-top:6px;font-size:13px"><span style="flex:1">' + esc(wlabel(w)) + '</span><button data-a="wcopy" data-i="' + i + '" style="' + bs + '">' + WT.copy + '</button><button data-a="wdel" data-i="' + i + '" style="' + bs + '">' + WT.rm + "</button></div>"; }).join("") : '<p style="font-size:13px;margin:6px 0 0">' + WT.none + "</p>") + "</div>";
+  }
+  function wsave(w) { var a = wl().filter(function (x) { return x.code !== w.code; }); a.unshift(w); window.AIFPAcct.set("afp_widgets", a.slice(0, 30)); }
+  function wact(a, i, el) {
+    var l = wl(); if (!l[i]) return;
+    if (a === "wcopy") { try { navigator.clipboard.writeText(l[i].code).then(function () { el.textContent = WT.copied; }); } catch (e) {} }
+    else { l.splice(i, 1); window.AIFPAcct.set("afp_widgets", l); open(); }
+  }
+  function wmount() {
+    var cp = document.getElementById("cpy"); if (!cp || !window.AFPCFG || document.getElementById("aifp-wsave")) return;
+    var b = document.createElement("button"); b.id = "aifp-wsave"; b.type = "button"; b.className = cp.className; b.style.marginLeft = "8px"; b.textContent = WT.save;
+    cp.parentNode.insertBefore(b, cp.nextSibling);
+    b.onclick = function () {
+      if (!S) { open(); return; }
+      var C = window.AFPCFG, el = document.getElementById("afpcode"), cm = document.getElementById("cm");
+      wsave({ t: C.t, m: C.m || "", team: C.team || "", lg: (C.lg || []).slice(), lang: C.lang, theme: C.theme, mlabel: C.t === "match" && cm && cm.selectedIndex >= 0 ? cm.options[cm.selectedIndex].text : "", code: el ? el.textContent : "", page: location.pathname, at: new Date().toISOString() });
+      b.textContent = WT.saved; setTimeout(function () { b.textContent = WT.save; }, 2500);
+    };
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { mount(); wmount(); refresh(); }); else { mount(); wmount(); refresh(); }
 })();
