@@ -261,5 +261,5 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 
 ## Follow
 - [Telegram channel](https://t.me/aifootballpredictorchannel)
-- [Bluesky](https://bsky.app/profile/aifootpredictor.com)
+- [Bluesky](https://bsky.app/profile/did:plc:nxkke6m5abp74xikyikzyuoz)
 - [Telegram Mini App](https://t.me/ai_football_predictorbot/app)
