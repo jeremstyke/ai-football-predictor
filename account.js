@@ -30,6 +30,8 @@
     else if (a === "login") open();
     else if (a === "logout") logout();
   });
+  // 9 nov 2026 (Jeremy): GitHub sign-in, the popup (api.aifootpredictor.com) sends back the session
+  addEventListener("message", function (e) { if (e.origin !== "https://api.aifootpredictor.com" || !e.data || !e.data.afpGh) return; var r = e.data.afpGh; if (r.ok) done({ ok: true, token: r.token, user: r.user, data: {} }); else msg(T.err); });
   function done(r) {
     if (!r || !r.ok) { msg(T.err); return; }
     S = { token: r.token, user: r.user }; D = r.data || {}; wr("aifp_acct", S); wr("aifp_acct_data", D);
@@ -70,10 +72,10 @@
     var pv = FR ? "/fr/confidentialite/" : "/privacy/";
     ov.innerHTML = S
       ? '<div class="aifp-md"><div class="u">' + (S.user && S.user.picture ? '<img src="' + esc(S.user.picture) + '" alt="" referrerpolicy="no-referrer">' : "") + '<div style="text-align:left"><b>' + esc((S.user && S.user.name) || T.hi) + '</b><br><small style="color:#9fb0c8">' + esc((S.user && S.user.email) || "") + '</small></div></div><p>' + T.why + '</p>' + (S.tg ? '<p style="color:#2fd08a;margin:0 0 8px">✅ ' + T.tgok + '</p>' : '<button class="bt" data-a="link">🔗 ' + T.link + '</button>') + wlist() + '<button class="bt" data-a="out">' + T.out + '</button><div class="l"><button data-a="del">' + T.del + '</button><button data-a="x">' + T.close + "</button></div></div>"
-      : '<div class="aifp-md"><h2>' + T.title + "</h2><p>" + T.why + '</p><div class="g" id="aifp-g"></div><div class="e"></div><div class="l"><a href="https://aifootpredictor.com' + pv + '">' + T.priv + '</a><button data-a="x">' + T.close + "</button></div></div>";
+      : '<div class="aifp-md"><h2>' + T.title + "</h2><p>" + T.why + '</p><div class="g" id="aifp-g"></div><button class="bt" data-a="gh" style="display:flex;align-items:center;justify-content:center;gap:9px;max-width:280px;margin:10px auto 0;border-radius:999px;background:#0d1117 !important;border-color:#3d444d !important"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" style="pointer-events:none" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>' + (FR ? "Continuer avec GitHub" : "Continue with GitHub") + '</button><div class="e"></div><div class="l"><a href="https://aifootpredictor.com' + pv + '">' + T.priv + '</a><button data-a="x">' + T.close + "</button></div></div>";
     ov.addEventListener("click", function (e) {
       var a = e.target.getAttribute && e.target.getAttribute("data-a");
-      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del(); else if (a === "link") link(); else if (a === "wcopy" || a === "wdel") wact(a, Number(e.target.getAttribute("data-i")), e.target);
+      if (e.target === ov || a === "x") close(); else if (a === "out") logout(); else if (a === "del") del(); else if (a === "link") link(); else if (a === "gh") { try { window.open(API + "github/start?lang=" + (FR ? "fr" : "en"), "aifp_gh", "width=560,height=720"); } catch (x) { location.href = API + "github/start?lang=" + (FR ? "fr" : "en"); } } else if (a === "wcopy" || a === "wdel") wact(a, Number(e.target.getAttribute("data-i")), e.target);
     });
     document.body.appendChild(ov);
     if (!S) loadGsi(function () {
