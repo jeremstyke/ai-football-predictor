@@ -31,6 +31,11 @@ body{background:var(--bg);color:var(--txt);font:14px/1.4 Inter,-apple-system,Bli
 .cta{flex:1;display:block;padding:10px 6px;text-align:center;background:var(--acc);color:#03110b;font-weight:700;font-size:13px;text-decoration:none;border:1px solid var(--acc)}.cta.o{background:transparent;color:var(--txt);border-color:var(--line)}
 .fo{display:flex;justify-content:space-between;gap:8px;padding:8px 12px 10px;font-size:10.5px;color:var(--mut)}.fo a{color:var(--acc2);text-decoration:none}
 .e{padding:16px 12px;color:var(--mut);font-size:13px}
+.so{display:flex;align-items:center;gap:12px;margin:10px 12px 0;padding:10px 12px;border:1px solid var(--line);background:linear-gradient(115deg,rgba(124,77,255,.16),rgba(76,195,255,.08) 50%,rgba(62,224,168,.04));color:inherit;text-decoration:none;transition:border-color .15s}.so:hover{border-color:var(--acc2)}
+.sk{position:relative;width:42px;height:50px;flex:none}.sk i{position:absolute;top:4px;width:30px;height:42px;border-radius:5px;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.35)}
+.sk i:first-child{left:0;transform:rotate(-12deg);background:linear-gradient(160deg,#5b8cff,#7c4dff 60%,#2a1b6e)}.sk i:last-child{left:11px;transform:rotate(7deg);background:linear-gradient(160deg,#ffe08a,#ffb347 45%,#ff7a45)}
+.st{flex:1;min-width:0}.st b{display:block;font-size:13px}.st small{display:block;font-size:11.5px;color:var(--mut);line-height:1.35;margin-top:2px}.st em{display:block;font:normal 9.5px var(--mono);color:var(--mut);opacity:.8;margin-top:3px}
+.sb{flex:none;font:700 11.5px var(--mono);padding:7px 10px;background:var(--txt);color:var(--bg)}
 </style></head><body>
 <div class="w" id="w"><div class="e">…</div></div>
 <script>
@@ -80,7 +85,8 @@ function draw(){if(!D)return;var M=D.m||[],nl=M.filter(function(m){return LIVE[m
  if(!M.length)h+='<div class="e">'+(fr?"Pas de match dans les prochaines heures. Toutes les probabilités sont sur le site.":"No match in the next hours. Every probability is on the website.")+'</div>';
  h+=M.map(card).join("");
  h+='<div class="cw"><div class="ct">🔴 '+(fr?"<b>Tous les matchs en direct</b> et leurs probabilités":"<b>Every live match</b> and its probabilities")+'</div><div class="cb"><a class="cta" href="'+SITE+'&tab=live" target="_blank" rel="noopener">🌐 '+(fr?"Sur le site":"On the website")+'</a></div></div>';
- h+='<a href="https://sorare.pxf.io/c/3023254/3202039/12209" target="_blank" rel="noopener sponsored" style="display:block;margin:8px 12px 0;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:12px;color:inherit;text-decoration:none">⚽ '+(fr?"Fantasy foot : joue sur <b>Sorare</b> avec de vrais joueurs ›":"Fantasy football: play on <b>Sorare</b> with real players ›")+'</a>';
+ /* 9 nov 2026 (Jeremy, "ça doit être pareil sur tous"): same Sorare partner card as the other widgets */
+ h+='<a class="so" href="https://sorare.pxf.io/c/3023254/3202039/12209" target="_blank" rel="noopener sponsored"><span class="sk"><i></i><i>⚽</i></span><span class="st"><b>'+(fr?"Fantasy foot sur Sorare":"Fantasy football on Sorare")+'</b><small>'+(fr?"Aligne de vrais joueurs chaque semaine et gagne des récompenses":"Line up real players every week and win rewards")+'</small><em>'+(fr?"Lien partenaire":"Partner link")+'</em></span><span class="sb">'+(fr?"Jouer ›":"Play ›")+'</span></a>';
  h+='<div class="fo"><span>'+(fr?"Probabilités, pas des certitudes. 18+":"Probabilities, not certainty. 18+")+'</span><a href="'+SITE+'&tab=rec" target="_blank" rel="noopener">'+(fr?"Fiabilité vérifiée ›":"Verified reliability ›")+'</a></div>';
  document.getElementById("w").innerHTML=h;size()}
 function load(){fetch(API+"afp_widget_live",{method:"POST",headers:H,body:JSON.stringify({lg:lg||null,lim:lim,team:team||null})}).then(function(r){return r.json()}).then(function(d){D=d;T0=Date.now();draw()}).catch(function(){if(!D){document.getElementById("w").innerHTML='<div class="e"><a href="'+SITE+'" target="_blank">AI Football Predictor</a></div>';size()}})}
