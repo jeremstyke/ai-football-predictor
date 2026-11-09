@@ -30,7 +30,7 @@ Win, draw and loss probabilities · expected goals · most likely score · live 
 
 ## ✨ What it is
 
-**AI Football Predictor** is a free app that gives the **home win, draw and away win probability** (1 / X / 2) of every football match in more than 25 competitions. Each probability is **locked before kickoff** and compared with the real result, and the full history, hits and misses, stays public.
+**AI Football Predictor** is a free app that gives the **home win, draw and away win probability** (1 / X / 2) of every football match in 45 competitions. Each probability is **locked before kickoff** and compared with the real result, and the full history, hits and misses, stays public.
 
 <table>
 <tr>
@@ -172,7 +172,7 @@ For the big matches, our AI writes a **preview from our own data only**: probabi
 <a id="free-api"></a>
 ## 🔌 Free football API
 
-**Free, 5,000 requests a day.** Our win, draw and loss probabilities, expected goals and most likely score for 29 competitions, as JSON, for your website, app or bot. It only contains our own calculations: no odds, no logos, no raw provider data.
+**Free, 5,000 requests a day.** Our win, draw and loss probabilities, expected goals and most likely score for 45 competitions, as JSON, for your website, app or bot. It only contains our own calculations: no odds, no logos, no raw provider data.
 
 [![Free](https://img.shields.io/badge/price-free-3ee0a8?style=flat-square)](https://aifootpredictor.com/api/?src=github)
 [![Requests](https://img.shields.io/badge/requests-5000%2Fday-4cc3ff?style=flat-square)](https://aifootpredictor.com/api/?src=github)
