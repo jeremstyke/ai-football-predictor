@@ -255,6 +255,7 @@ async function acctRoutes(req: Request, u: URL) {
     }
     const me = await acctUser(req);
     if (!me) return acctOut({ ok: false, error: "auth" }, 401);
+    if (u.pathname.startsWith("/api/acct/apikey")) return v1KeyRoutes(req, u, me.uid);
     if (u.pathname === "/api/acct/me") {
       const a = (await sb(`afp_accounts?uid=eq.${me.uid}&select=name,email,picture,lang,tg_id`))?.[0] || {};
       // 8 nov 2026 (Jeremy): player id for "Défie le modèle" (Telegram id once linked) and Premium of the linked Telegram account
@@ -287,7 +288,187 @@ async function acctRoutes(req: Request, u: URL) {
   } catch (e) { console.log("acct error", u.pathname, String(e)); return acctOut({ ok: false, error: "server" }, 500); }
   return acctOut({ ok: false, error: "not found" }, 404);
 }
+// ---- Free public API v1 ----
+// 9 nov 2026 (Jeremy): "une seule offre gratuite", 1000 requests/day, key for signed-in members only, "si pas de lien vers nous l'api bloque".
+// Only our own calculations (probabilities, likely score, expected goals, reliability). No odds, no logos, no raw provider data.
+const V1_SITE = "https://aifootpredictor.com/";
+const V1_CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "x-api-key,content-type", "Access-Control-Allow-Methods": "GET,OPTIONS", "Access-Control-Expose-Headers": "X-RateLimit-Limit,X-RateLimit-Remaining" };
+const V1_ATTR = { text: "Probabilities by AI Football Predictor", url: V1_SITE + "?utm_source=api", html: '<a href="https://aifootpredictor.com/?utm_source=api" target="_blank" rel="noopener">Probabilities by AI Football Predictor</a>', required: true, rule: "Show this link, visible and clickable, on every page that displays data from this API." };
+const v1Out = (d: any, s = 200, h: Record<string, string> = {}) => new Response(JSON.stringify(d, null, 1), { status: s, headers: { ...V1_CORS, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...h } });
+function v1Url(raw: string) {
+  try {
+    const u = new URL(String(raw || "").trim().slice(0, 500));
+    if (!["http:", "https:"].includes(u.protocol)) return null;
+    const h = u.hostname.toLowerCase();
+    if (!h.includes(".") || /^[\d.]+$/.test(h) || h.includes(":") || /(^|\.)(localhost|internal|local|railway\.internal)$/.test(h) || h.endsWith("aifootpredictor.com")) return null;
+    return { url: u.toString(), domain: h.replace(/^www\./, "") };
+  } catch { return null; }
+}
+async function v1LinkCheck(url: string) {
+  try {
+    const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 12000);
+    const r = await fetch(url, { signal: ac.signal, redirect: "follow", headers: { "User-Agent": "AIFP-LinkCheck/1.0 (+https://aifootpredictor.com/api/)", Accept: "text/html,*/*" } });
+    clearTimeout(t);
+    if (!r.ok) return { ok: false, why: `http_${r.status}` };
+    const html = (await r.text()).slice(0, 3_000_000);
+    const ok = /(href|src)\s*=\s*["']?https?:\/\/(www\.)?aifootpredictor\.com/i.test(html);
+    return { ok, why: ok ? "found" : "not_found" };
+  } catch (e) { return { ok: false, why: "unreachable" }; }
+}
+function v1KeyView(k: any) {
+  if (!k) return null;
+  const grace = !k.link_ok ? Math.max(0, Math.ceil((Date.parse(k.created_at) + 3 * 864e5 - Date.now()) / 864e5)) : 0;
+  return { key: k.key, site_url: k.site_url, domain: k.domain, link_ok: !!k.link_ok, checked_at: k.checked_at, grace_days: grace, blocked: !k.link_ok && grace === 0, active: k.active };
+}
+async function v1KeyRoutes(req: Request, u: URL, uid: string) {
+  const sel = "key,site_url,domain,link_ok,checked_at,created_at,active,fails";
+  let k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
+  if (u.pathname === "/api/acct/apikey" && req.method === "GET") {
+    const use = k ? (await sb(`afp_api_usage?key=eq.${k.key}&day=eq.${new Date().toISOString().slice(0, 10)}&select=calls`))?.[0]?.calls || 0 : 0;
+    const lim: any = await sb("rpc/afp_api_limit_for", { method: "POST", body: JSON.stringify({ p_uid: uid }) });
+    return acctOut({ ok: true, key: v1KeyView(k), today: use, limit: Number(lim) || 5000 });
+  }
+  if (req.method !== "POST") return acctOut({ ok: false, error: "method" }, 405);
+  if (u.pathname === "/api/acct/apikey") {
+    const b: any = await req.json().catch(() => ({}));
+    const s = v1Url(b.site_url);
+    if (!s) return acctOut({ ok: false, error: "site_url" }, 400);
+    const chk = await v1LinkCheck(s.url), now = new Date().toISOString();
+    const patch: any = { site_url: s.url, domain: s.domain, checked_at: now, link_ok: chk.ok, fails: chk.ok ? 0 : 1 };
+    if (chk.ok) patch.link_at = now;
+    if (k) {
+      await sb(`afp_api_keys?uid=eq.${uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+    } else {
+      const a = (await sb(`afp_accounts?uid=eq.${uid}&select=email,name`))?.[0] || {};
+      const key = "aifp_" + randomBytes(16).toString("hex");
+      await sb("afp_api_keys", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ key, uid, email: a.email || null, plan: "free", active: true, note: "member", ...patch }) });
+      if (TOKEN) fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: 7057960224, text: `🔑 AI Football Predictor - nouvelle clé API gratuite\n${a.name || ""}\nSite : ${s.url}\nLien vers nous : ${chk.ok ? "trouvé ✅" : "pas encore ❌"}` }) }).catch(() => null);
+    }
+    k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
+    return acctOut({ ok: true, key: v1KeyView(k), check: chk.why });
+  }
+  if (u.pathname === "/api/acct/apikey/check") {
+    if (!k) return acctOut({ ok: false, error: "no_key" }, 404);
+    if (k.checked_at && Date.now() - Date.parse(k.checked_at) < 30e3) return acctOut({ ok: true, key: v1KeyView(k), check: "wait" });
+    const chk = await v1LinkCheck(k.site_url), now = new Date().toISOString();
+    const patch: any = { checked_at: now };
+    if (chk.ok) Object.assign(patch, { link_ok: true, fails: 0, link_at: now }); else Object.assign(patch, { link_ok: false, fails: (k.fails || 0) + 1 });
+    await sb(`afp_api_keys?uid=eq.${uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+    k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
+    return acctOut({ ok: true, key: v1KeyView(k), check: chk.why });
+  }
+  return acctOut({ ok: false, error: "not found" }, 404);
+}
+// Daily check (cron): a link that disappears 3 checks in a row blocks the key.
+async function v1Cron() {
+  const old = new Date(Date.now() - 20 * 3600e3).toISOString();
+  const rows = (await sb(`afp_api_keys?uid=not.is.null&active=eq.true&site_url=not.is.null&or=(checked_at.is.null,checked_at.lt.${old})&select=key,site_url,fails,link_ok&limit=60`)) || [];
+  let ok = 0, ko = 0;
+  for (const k of rows) {
+    const chk = await v1LinkCheck(k.site_url), now = new Date().toISOString();
+    const patch: any = { checked_at: now };
+    if (chk.ok) { Object.assign(patch, { link_ok: true, fails: 0, link_at: now }); ok++; }
+    else { const f = (k.fails || 0) + 1; Object.assign(patch, { fails: f }); if (f >= 3) patch.link_ok = false; ko++; }
+    await sb(`afp_api_keys?key=eq.${k.key}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+  }
+  return { checked: rows.length, ok, ko };
+}
+// 9 nov 2026 (Jeremy, "oui"): more per match, all derived from our expected goals (same Poisson calculation as the app's match page)
+function v1Pois(k: number, m: number) { let q = Math.exp(-m); for (let i = 1; i <= k; i++) q *= m / i; return q; }
+function v1Extra(m: any) {
+  const r = (x: number) => Math.round(x * 1000) / 1000;
+  const dc = { home_or_draw: r(Number(m.ph) + Number(m.pd)), away_or_draw: r(Number(m.pa) + Number(m.pd)), home_or_away: r(Number(m.ph) + Number(m.pa)) };
+  if (m.xg_h == null || m.xg_a == null) return { double_chance: dc, both_teams_score: null, clean_sheet: null, top_scores: null };
+  const xh = Number(m.xg_h), xa = Number(m.xg_a), g: any[] = [];
+  for (let i = 0; i <= 6; i++) for (let j = 0; j <= 6; j++) g.push({ score: `${i}-${j}`, probability: v1Pois(i, xh) * v1Pois(j, xa) });
+  g.sort((a, b) => b.probability - a.probability);
+  return { double_chance: dc, both_teams_score: r((1 - Math.exp(-xh)) * (1 - Math.exp(-xa))), clean_sheet: { home: r(Math.exp(-xa)), away: r(Math.exp(-xh)) }, top_scores: g.slice(0, 5).map(x => ({ score: x.score, probability: r(x.probability) })) };
+}
+const V1_TBL: Record<string, string> = { F1: "Ligue 1", E0: "Premier League", SP1: "LaLiga", I1: "Serie A", D1: "Bundesliga", P1: "Liga Portugal", N1: "Eredivisie", T1: "Süper Lig" };
+const V1_SEL = "id,n,league,kickoff,home,away,ph,pd,pa,o25,score,score_p,xg_h,xg_a,pick,pick_prob,status,hg,ag";
+function v1Match(m: any, dom: string) {
+  const r2 = (x: any) => (x == null ? null : Math.round(Number(x) * 1000) / 1000);
+  const oc: any = { H: "home", D: "draw", A: "away" };
+  const fin = m.status === "won" || m.status === "lost";
+  return {
+    id: m.id, competition: m.league, kickoff: m.kickoff, home: m.home, away: m.away,
+    probabilities: { home: r2(m.ph), draw: r2(m.pd), away: r2(m.pa) },
+    most_likely: { outcome: oc[m.pick] || null, probability: r2(m.pick_prob) },
+    over_2_5_goals: r2(m.o25),
+    likely_score: m.score ? { score: m.score, probability: r2(m.score_p) } : null,
+    expected_goals: m.xg_h != null ? { home: m.xg_h, away: m.xg_a } : null,
+    ...v1Extra(m),
+    status: fin ? "finished" : m.status === "pending" ? "upcoming" : m.status,
+    result: fin ? { home: m.hg, away: m.ag, most_likely_happened: m.status === "won" } : null,
+    url: `${V1_SITE}?tab=m${m.n}&utm_source=api&utm_medium=${encodeURIComponent(dom || "unknown")}`,
+  };
+}
+async function v1(req: Request, u: URL) {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: V1_CORS });
+  const p = u.pathname.replace(/\/+$/, "");
+  if (p === "/api/v1/_cron") { if (u.searchParams.get("k") !== "9b22101c96f9f88c28fd0721") return v1Out({ error: "auth" }, 401); return v1Out(await v1Cron()); }
+  if (p === "/api/v1" || p === "/api/v1/") return v1Out({ name: "AI Football Predictor free API", docs: V1_SITE + "api/", endpoints: ["/api/v1/matches", "/api/v1/articles", "/api/v1/tables", "/api/v1/competitions", "/api/v1/reliability"], openapi: V1_SITE + "openapi.json", attribution: V1_ATTR });
+  const key = (req.headers.get("x-api-key") || u.searchParams.get("key") || "").trim().slice(0, 80);
+  if (!key) return v1Out({ error: "missing_key", message: "Send your key in the X-API-Key header. Free key for members at https://aifootpredictor.com/api/", attribution: V1_ATTR }, 401);
+  const au: any = await sb("rpc/afp_api_v1_auth", { method: "POST", body: JSON.stringify({ p_key: key, p_origin: req.headers.get("origin") || null }) });
+  if (!au?.ok) return v1Out({ error: au?.error || "server", message: au?.message || "Server error", attribution: V1_ATTR }, au?.status || 500);
+  const rl = { "X-RateLimit-Limit": String(au.limit), "X-RateLimit-Remaining": String(au.left) };
+  const dom = (await sb(`afp_api_keys?key=eq.${encodeURIComponent(key)}&select=domain`))?.[0]?.domain || "";
+  const meta: any = { calls_left_today: au.left };
+  if (au.grace) meta.notice = "No link to aifootpredictor.com found on your site yet. Add it within 3 days of creating your key, or the key stops working.";
+  try {
+    if (p === "/api/v1/matches") {
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(u.searchParams.get("date") || "") ? u.searchParams.get("date")! : new Date().toISOString().slice(0, 10);
+      const next = new Date(Date.parse(d + "T00:00:00Z") + 864e5).toISOString().slice(0, 10);
+      const c = (u.searchParams.get("competition") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 12);
+      const st = u.searchParams.get("status") || "all";
+      let q = `afp_predictions?select=${V1_SEL}&kickoff=gte.${d}T00:00:00Z&kickoff=lt.${next}T00:00:00Z&order=kickoff.asc&limit=400`;
+      if (c) q += `&league=eq.${c}`;
+      if (st === "upcoming") q += "&status=eq.pending"; else if (st === "finished") q += "&status=in.(won,lost)";
+      const rows = ((await sb(q)) || []).map((m: any) => v1Match(m, dom));
+      return v1Out({ attribution: V1_ATTR, meta: { ...meta, date: d, count: rows.length }, data: rows }, 200, rl);
+    }
+    if (p === "/api/v1/competitions") {
+      const since = new Date(Date.now() - 30 * 864e5).toISOString();
+      const rows = (await sb(`afp_predictions?select=league&kickoff=gte.${since}&limit=5000`)) || [];
+      const cnt: Record<string, number> = {}; for (const r of rows) cnt[r.league] = (cnt[r.league] || 0) + 1;
+      const data = Object.entries(cnt).sort((a, b) => b[1] - a[1]).map(([code, n]) => ({ code, matches_last_30_days: n }));
+      return v1Out({ attribution: V1_ATTR, meta: { ...meta, count: data.length }, data }, 200, rl);
+    }
+    if (p === "/api/v1/articles") {
+      // 9 nov 2026 (Jeremy, "oui"): pre-match articles in the free API as an excerpt (title, lede, first paragraph) + mandatory "read the full analysis" link, so Google keeps our page as the original
+      const lg = u.searchParams.get("lang") === "fr" ? "fr" : "en";
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(u.searchParams.get("date") || "") ? u.searchParams.get("date")! : "";
+      const lim = Math.min(50, Math.max(1, Number(u.searchParams.get("limit")) || 20));
+      let q = `afp_blog?kind=eq.match&lang=eq.${lg}&select=slug,title,published_at,data&order=published_at.desc&limit=${lim}`;
+      if (d) { const nx = new Date(Date.parse(d + "T00:00:00Z") + 864e5).toISOString().slice(0, 10); q += `&data->>ko=gte.${d}T00:00:00&data->>ko=lt.${nx}T00:00:00`; }
+      const rt = lg === "fr" ? "Lire l'analyse complète sur AI Football Predictor" : "Read the full analysis on AI Football Predictor";
+      const data = ((await sb(q)) || []).map((r: any) => {
+        const A = r.data?.a || {}, b = A[`body_${lg}`] || [];
+        const url = `${V1_SITE}${lg === "fr" ? "fr/" : ""}blog/${r.slug}/?utm_source=api&utm_medium=${encodeURIComponent(dom || "unknown")}`;
+        return { title: A[`title_${lg}`] || r.title, lede: A[`lede_${lg}`] || null, excerpt: b[0] || null, kickoff: r.data?.ko || null, published_at: r.published_at, url, read_more: { text: rt, url, html: `<a href="${url}" target="_blank" rel="noopener">${rt}</a>`, required: true } };
+      });
+      return v1Out({ attribution: V1_ATTR, meta: { ...meta, lang: lg, count: data.length, rule: "Show the excerpt only, with the read_more link visible under it. Do not republish the full article." }, data }, 200, rl);
+    }
+    if (p === "/api/v1/tables") {
+      // 9 nov 2026 (Jeremy, "oui"): predicted end-of-season tables from our nightly simulations (no logos, no provider ids)
+      const c = (u.searchParams.get("competition") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (!V1_TBL[c]) return v1Out({ attribution: V1_ATTR, meta: { ...meta, message: "Add ?competition=CODE" }, data: Object.entries(V1_TBL).map(([code, name]) => ({ code, name })) }, 200, rl);
+      const d: any = await sb("rpc/afp_widget_table", { method: "POST", body: JSON.stringify({ lg: c }) });
+      if (!d?.teams?.length) return v1Out({ error: "not_available", attribution: V1_ATTR }, 404, rl);
+      const r = (x: any) => (x == null ? null : Math.round(Number(x) * 1000) / 1000);
+      const teams = d.teams.slice().sort((a: any, b: any) => b.xpts - a.xpts || a.pos - b.pos).map((t: any, i: number) => ({ rank: i + 1, team: t.name, played: t.pl, points: t.pts, expected_points: t.xpts, expected_position: r(t.pos), title: r(t.title), [`top_${d.top}`]: r(t.top), relegation: r(t.rel), attack_rating: r(t.att), defence_rating: r(t.def) }));
+      return v1Out({ attribution: V1_ATTR, meta: { ...meta, competition: c, name: d.name, season: d.season, simulations: d.sims, updated_at: d.at, top_places: d.top, relegation_places: d.rel, url: `${V1_SITE}?utm_source=api` }, data: teams }, 200, rl);
+    }
+    if (p === "/api/v1/reliability") {
+      const s: any = await sb("rpc/afp_scores", { method: "POST", body: "{}" });
+      return v1Out({ attribution: V1_ATTR, meta: { ...meta, explain: V1_SITE + "method/" }, data: { all: s?.all ?? null, compared_with_market: s?.cmp ?? null, random_guess: s?.guess ?? null } }, 200, rl);
+    }
+  } catch (e) { console.log("v1 error", p, String(e)); return v1Out({ error: "server", attribution: V1_ATTR }, 500); }
+  return v1Out({ error: "not_found", docs: V1_SITE + "api/", attribution: V1_ATTR }, 404);
+}
 export async function handle(req: Request) {
+  if (new URL(req.url).pathname.startsWith("/api/v1")) return v1(req, new URL(req.url));
   if (new URL(req.url).pathname.startsWith("/api/acct/")) return acctRoutes(req, new URL(req.url));
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   const u = new URL(req.url);
