@@ -156,8 +156,9 @@ Adresse de base : `https://api.aifootpredictor.com/api/v1` (en-tête `X-API-Key`
 
 | Endpoint | Contenu |
 |---|---|
-| `GET /matches` | Les matchs d'un jour : probabilités 1 / N / 2, issue la plus probable, plus de 2,5 buts, score le plus probable, buts attendus, résultat une fois fini. Paramètres : `date`, `competition`, `status` |
+| `GET /matches` | Les matchs d'un jour : probabilités 1 / N / 2, issue la plus probable, double chance, plus de 2,5 buts, les deux équipes marquent, clean sheets, 5 scores les plus probables, buts attendus, résultat une fois fini. Paramètres : `date`, `competition`, `status` |
 | `GET /articles` | Nos articles avant-match écrits par l'IA (FR ou EN) : titre, chapeau et premier paragraphe, avec le lien « Lire l'analyse complète » à afficher dessous. Paramètres : `lang`, `date`, `limit` |
+| `GET /tables` | Classement probable de fin de saison (20 000 simulations chaque nuit) : points attendus, chances de titre, de top 4 et de relégation. Paramètre : `competition` |
 | `GET /competitions` | Les codes des compétitions couvertes |
 | `GET /reliability` | Score de Brier et log loss sur tous les matchs terminés, comparés au marché et au hasard |
 
@@ -166,6 +167,8 @@ curl -H "X-API-Key: VOTRE_CLE" "https://api.aifootpredictor.com/api/v1/matches?s
 ```
 
 Chaque réponse contient un bloc `attribution` avec le lien prêt à afficher.
+
+📄 [Spécification OpenAPI](https://aifootpredictor.com/openapi.json) · 📮 [Collection Postman](postman/aifp-free-api.postman_collection.json)
 
 👉 [Documentation complète et votre clé gratuite](https://aifootpredictor.com/fr/api/?src=github)
 
