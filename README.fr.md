@@ -91,7 +91,7 @@ Beaucoup de sites de pronostics n'affichent que leurs réussites. Ici :
 
 ## Compétitions couvertes
 
-Plus de 25 compétitions, dont :
+45 compétitions, dont :
 
 | Pays / Europe | Compétitions |
 |---|---|
