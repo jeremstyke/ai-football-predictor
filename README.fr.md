@@ -25,7 +25,7 @@
 - [Compétitions couvertes](#compétitions-couvertes)
 - [Widget gratuit pour votre site](#widget-gratuit-pour-votre-site)
 - [Articles avant-match](#articles-avant-match)
-- [API de probabilités foot](#api-de-probabilités-foot)
+- [API foot gratuite](#free-api)
 - [Questions fréquentes](#questions-fréquentes)
 
 ---
@@ -136,20 +136,37 @@ Pour les gros matchs, notre IA écrit un **avant-match** à partir de nos seules
 
 ---
 
-## API de probabilités foot
+<a id="free-api"></a>
+## API foot gratuite
 
-Pour les médias, applis et développeurs : probabilités 1 / N / 2, buts attendus, score le plus probable, direct, classements simulés, historique de fiabilité et articles avant-match prêts à publier.
+**Gratuite, 1000 requêtes par jour.** Nos probabilités de victoire, de nul et de défaite, les buts attendus et le score le plus probable sur 29 compétitions, en JSON, pour votre site, votre appli ou votre bot. Uniquement nos propres calculs : pas de cotes, pas de logos, pas de données brutes de fournisseurs.
+
+**Obtenir une clé en 2 minutes**
+
+1. Allez sur **[aifootpredictor.com/fr/api](https://aifootpredictor.com/fr/api/?src=github)** et connectez-vous avec Google.
+2. Ajoutez ce lien sur la page qui affichera les données :
+   ```html
+   <a href="https://aifootpredictor.com/?utm_source=api" target="_blank" rel="noopener">Probabilities by AI Football Predictor</a>
+   ```
+3. Indiquez l'adresse de cette page. Votre clé est créée tout de suite et le lien est vérifié automatiquement.
+
+> **La seule règle :** un lien visible vers aifootpredictor.com sur chaque page qui affiche nos données. Vous avez 3 jours pour l'ajouter, ensuite la clé est bloquée tant que le lien n'est pas trouvé. Vérification une fois par jour.
+
+Adresse de base : `https://afp-blog-production.up.railway.app/api/v1` (en-tête `X-API-Key`)
 
 | Endpoint | Contenu |
 |---|---|
-| `GET /matches` | Matchs à venir avec probabilités, xG, score le plus probable, plus de 2,5 buts |
-| `GET /live` | Matchs en cours, probabilité en direct |
-| `GET /tables` | Classement probable de fin de saison |
-| `GET /teams/{id}` | Forme, prochains matchs, projection |
-| `GET /reliability` | Historique public de fiabilité |
-| `GET /articles` | Avant-matchs complets en français et en anglais, avec image |
+| `GET /matches` | Les matchs d'un jour : probabilités 1 / N / 2, issue la plus probable, plus de 2,5 buts, score le plus probable, buts attendus, résultat une fois fini. Paramètres : `date`, `competition`, `status` |
+| `GET /competitions` | Les codes des compétitions couvertes |
+| `GET /reliability` | Score de Brier et log loss sur tous les matchs terminés, comparés au marché et au hasard |
 
-👉 [Documentation et accès anticipé](https://aifootpredictor.com/fr/api/?src=github)
+```bash
+curl -H "X-API-Key: VOTRE_CLE" "https://afp-blog-production.up.railway.app/api/v1/matches?status=upcoming"
+```
+
+Chaque réponse contient un bloc `attribution` avec le lien prêt à afficher.
+
+👉 [Documentation complète et votre clé gratuite](https://aifootpredictor.com/fr/api/?src=github)
 
 ---
 
@@ -189,7 +206,7 @@ Parce qu'une probabilité de 55 % veut dire que l'autre issue arrive 45 % du tem
 
 <div align="center">
 
-**AI Football Predictor** · by [@jeremstyke](https://t.me/jeremstyke)
+**AI Football Predictor** · [aifootpredictor.com](https://aifootpredictor.com/fr/?src=github)
 
 <sub>football predictions · soccer predictions · AI football predictions · match probabilities · expected goals · xG · Poisson model · 1X2 · over 2.5 goals · BTTS · Premier League predictions · Champions League predictions · LaLiga predictions · Serie A predictions · Bundesliga predictions · Ligue 1 · pronostics foot · probabilités foot · prédictions football IA</sub>
 
