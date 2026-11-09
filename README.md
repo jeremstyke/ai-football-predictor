@@ -193,7 +193,7 @@ For the big matches, our AI writes a **preview from our own data only**: probabi
 
 ### Endpoints
 
-Base URL: `https://afp-blog-production.up.railway.app/api/v1`
+Base URL: `https://api.aifootpredictor.com/api/v1`
 
 | Endpoint | Returns |
 |---|---|
@@ -204,7 +204,7 @@ Base URL: `https://afp-blog-production.up.railway.app/api/v1`
 ### Example
 
 ```bash
-curl -H "X-API-Key: YOUR_KEY" "https://afp-blog-production.up.railway.app/api/v1/matches?status=upcoming"
+curl -H "X-API-Key: YOUR_KEY" "https://api.aifootpredictor.com/api/v1/matches?status=upcoming"
 ```
 
 ```json
@@ -237,7 +237,7 @@ curl -H "X-API-Key: YOUR_KEY" "https://afp-blog-production.up.railway.app/api/v1
 ```
 
 ```js
-fetch("https://afp-blog-production.up.railway.app/api/v1/matches", { headers: { "X-API-Key": "YOUR_KEY" } })
+fetch("https://api.aifootpredictor.com/api/v1/matches", { headers: { "X-API-Key": "YOUR_KEY" } })
   .then(r => r.json())
   .then(({ attribution, data }) => {
     // display data, and always display attribution.html on the page
