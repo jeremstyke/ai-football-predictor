@@ -1,6 +1,6 @@
 # AI Football Predictor
 
-> Free win, draw and loss probabilities for every football match in 25+ competitions, locked before kickoff and checked against the real result (misses included). Website (English and French) and Telegram Mini App. Statistical estimates for information, not betting advice.
+> Free win, draw and loss probabilities for every football match in 45 competitions, locked before kickoff and checked against the real result (misses included). Website (English and French) and Telegram Mini App. Statistical estimates for information, not betting advice.
 
 Key facts: probabilities come from a Poisson model on goals and expected goals (xG), recalculated every day; every match since launch (6 November 2026) is tracked in a public reliability record; season outcomes (title, top, relegation) come from 20,000 simulations of the remaining matches.
 
