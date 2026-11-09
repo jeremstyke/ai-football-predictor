@@ -254,12 +254,33 @@ Errors come back as JSON with `error` and `message`: `401 invalid_key`, `403 lin
 
 <br>
 
+<a id="pro"></a>
+## 💼 AIFP Pro, for websites and media
+
+For fans, everything stays free. **AIFP Pro** is for football websites, blogs, media and apps that use our data commercially.
+
+| | Free | 💼 Pro |
+|---|:-:|:-:|
+| Probabilities, live, alerts, My space | ✅ | ✅ |
+| API requests per day | 5,000 | **50,000** |
+| Link to our site | required | **optional** |
+| Match history with results, live scores, more markets | | ✅ |
+| Widgets in your colours, with your logo | | ✅ |
+| No ads on the site and widgets | | ✅ |
+| Commercial use (1 site or 1 app) | | ✅ |
+
+**7 days free**, then **$19 / month** or **$199.99 / year** (excl. VAT). Cancel anytime.
+
+**[→ Discover AIFP Pro](https://aifootpredictor.com/pro/?src=github)**
+
+<br>
+
 ## ❓ FAQ
 
 <details>
 <summary><b>Is AI Football Predictor free?</b></summary>
 <br>
-Yes. The website, the web app, the Telegram mini app and the widget are free.
+Yes. The website, the web app, the Telegram mini app, the widget and the API (5,000 requests a day) are free. [AIFP Pro](#pro) is only for websites and media that need more.
 </details>
 
 <details>
