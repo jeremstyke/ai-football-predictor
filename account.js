@@ -11,6 +11,9 @@
   function rd(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function wr(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var S = rd("aifp_acct"), D = rd("aifp_acct_data") || {}, frames = [];
+  // 9 nov 2026 (Jeremy): a site account linked to an active Telegram Premium sees no Sorare banner (.aifp-sorb) on the site pages
+  function premPaint() { var on = !!(S && S.prem && Date.parse(S.prem) > Date.now()), st = document.getElementById("aifp-prem"); if (on && !st) { st = document.createElement("style"); st.id = "aifp-prem"; st.textContent = ".aifp-sorb{display:none!important}"; document.head.appendChild(st); } else if (!on && st) st.remove(); }
+  premPaint();
   function call(path, body) {
     return fetch(API + path, { method: body ? "POST" : "GET", headers: Object.assign({ "Content-Type": "application/json" }, S && S.token ? { "x-session": S.token } : {}), body: body ? JSON.stringify(body) : undefined })
       .then(function (r) { if (r.status === 401 && S) { S = null; wr("aifp_acct", null); paint(); } return r.json(); });
@@ -35,7 +38,7 @@
   function fire() { try { dispatchEvent(new CustomEvent("aifp-acct", { detail: { user: S && S.user, data: D } })); } catch (e) {} }
   function logout() {
     if (S) call("logout", {}).catch(function () {});
-    S = null; D = {}; wr("aifp_acct", null); wr("aifp_acct_data", null);
+    S = null; D = {}; wr("aifp_acct", null); wr("aifp_acct_data", null); premPaint();
     try { google.accounts.id.disableAutoSelect(); } catch (e) {}
     close(); paint(); tell(); fire();
   }
@@ -94,7 +97,7 @@
     paint();
   }
   // keep the saved data fresh (another device may have changed it)
-  function refresh() { if (S) call("me").then(function (r) { if (r && r.ok) { D = r.data || {}; wr("aifp_acct_data", D); if (r.user) { S.user = { name: r.user.name, email: r.user.email, picture: r.user.picture }; S.tg = !!r.tg; wr("aifp_acct", S); paint(); } fire(); } }).catch(function () {}); }
+  function refresh() { if (S) call("me").then(function (r) { if (r && r.ok) { D = r.data || {}; wr("aifp_acct_data", D); if (r.user) { S.user = { name: r.user.name, email: r.user.email, picture: r.user.picture }; S.tg = !!r.tg; S.prem = r.prem || null; wr("aifp_acct", S); paint(); premPaint(); } fire(); } }).catch(function () {}); }
   window.AIFPAcct = {
     user: function () { return S && S.user; }, token: function () { return S && S.token; }, open: open, logout: logout,
     get: function (k) { return D[k]; },
