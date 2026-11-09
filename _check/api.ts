@@ -256,6 +256,7 @@ async function acctRoutes(req: Request, u: URL) {
     const me = await acctUser(req);
     if (!me) return acctOut({ ok: false, error: "auth" }, 401);
     if (u.pathname.startsWith("/api/acct/apikey")) return v1KeyRoutes(req, u, me.uid);
+    if (u.pathname === "/api/acct/wstyle") return wstyleRoute(req, me.uid);
     if (u.pathname === "/api/acct/me") {
       const a = (await sb(`afp_accounts?uid=eq.${me.uid}&select=name,email,picture,lang,tg_id`))?.[0] || {};
       // 8 nov 2026 (Jeremy): player id for "Défie le modèle" (Telegram id once linked) and Premium of the linked Telegram account
@@ -292,6 +293,7 @@ async function acctRoutes(req: Request, u: URL) {
 // 9 nov 2026 (Jeremy): "une seule offre gratuite", 1000 requests/day, key for signed-in members only, "si pas de lien vers nous l'api bloque".
 // Only our own calculations (probabilities, likely score, expected goals, reliability). No odds, no logos, no raw provider data.
 const V1_SITE = "https://aifootpredictor.com/";
+const PREM_STARS = 250;
 const V1_CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "x-api-key,content-type", "Access-Control-Allow-Methods": "GET,OPTIONS", "Access-Control-Expose-Headers": "X-RateLimit-Limit,X-RateLimit-Remaining" };
 const V1_ATTR = { text: "Probabilities by AI Football Predictor", url: V1_SITE + "?utm_source=api", html: '<a href="https://aifootpredictor.com/?utm_source=api" target="_blank" rel="noopener">Probabilities by AI Football Predictor</a>', required: true, rule: "Show this link, visible and clickable, on every page that displays data from this API." };
 const v1Out = (d: any, s = 200, h: Record<string, string> = {}) => new Response(JSON.stringify(d, null, 1), { status: s, headers: { ...V1_CORS, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...h } });
@@ -320,44 +322,95 @@ function v1KeyView(k: any) {
   const grace = !k.link_ok ? Math.max(0, Math.ceil((Date.parse(k.created_at) + 3 * 864e5 - Date.now()) / 864e5)) : 0;
   return { key: k.key, site_url: k.site_url, domain: k.domain, link_ok: !!k.link_ok, checked_at: k.checked_at, grace_days: grace, blocked: !k.link_ok && grace === 0, active: k.active };
 }
-async function v1KeyRoutes(req: Request, u: URL, uid: string) {
+// 9 nov 2026 (Jeremy): API key + Premium widget style manageable from the website (Google account) AND from the Telegram mini app.
+// An "owner" says how to find the rows (website account and its linked Telegram, or the reverse) and who is Premium.
+type Own = { q: string; set: Record<string, any>; prem: () => Promise<boolean>; name: string; email: string | null };
+async function ownSite(uid: string): Promise<Own> {
+  const a = (await sb(`afp_accounts?uid=eq.${uid}&select=tg_id,email,name`))?.[0] || {};
+  return { q: a.tg_id ? `or=(uid.eq.${uid},tg_id.eq.${a.tg_id})` : `uid=eq.${uid}`, set: { uid }, name: a.name || "", email: a.email || null,
+    prem: async () => !!(await sb("rpc/afp_is_prem", { method: "POST", body: JSON.stringify({ p_uid: uid }) })) || (a.tg_id ? !!(await sb("rpc/afp_tg_prem", { method: "POST", body: JSON.stringify({ p_tg: a.tg_id }) })) : false) };
+}
+async function ownTg(tg: number, name: string): Promise<Own> {
+  const a = (await sb(`afp_accounts?tg_id=eq.${tg}&select=uid,email`))?.[0];
+  return { q: a?.uid ? `or=(tg_id.eq.${tg},uid.eq.${a.uid})` : `tg_id=eq.${tg}`, set: { tg_id: tg }, name, email: a?.email || null,
+    prem: async () => !!(await sb("rpc/afp_tg_prem", { method: "POST", body: JSON.stringify({ p_tg: tg }) })) || (a?.uid ? !!(await sb("rpc/afp_is_prem", { method: "POST", body: JSON.stringify({ p_uid: a.uid }) })) : false) };
+}
+async function v1KeyCore(req: Request, sub: string, o: Own, reply: (d: any, s?: number) => Response) {
   const sel = "key,site_url,domain,link_ok,checked_at,created_at,active,fails";
-  let k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
-  if (u.pathname === "/api/acct/apikey" && req.method === "GET") {
+  const get = async () => (await sb(`afp_api_keys?${o.q}&active=eq.true&select=${sel}&order=created_at.desc&limit=1`))?.[0];
+  let k = await get();
+  const lim = async () => ((await o.prem()) ? 50000 : 5000);
+  if (sub === "" && req.method === "GET") {
     const use = k ? (await sb(`afp_api_usage?key=eq.${k.key}&day=eq.${new Date().toISOString().slice(0, 10)}&select=calls`))?.[0]?.calls || 0 : 0;
-    const lim: any = await sb("rpc/afp_api_limit_for", { method: "POST", body: JSON.stringify({ p_uid: uid }) });
-    return acctOut({ ok: true, key: v1KeyView(k), today: use, limit: Number(lim) || 5000 });
+    return reply({ ok: true, key: v1KeyView(k), today: use, limit: await lim() });
   }
-  if (req.method !== "POST") return acctOut({ ok: false, error: "method" }, 405);
-  if (u.pathname === "/api/acct/apikey") {
+  if (req.method !== "POST") return reply({ ok: false, error: "method" }, 405);
+  if (sub === "") {
     const b: any = await req.json().catch(() => ({}));
     const s = v1Url(b.site_url);
-    if (!s) return acctOut({ ok: false, error: "site_url" }, 400);
+    if (!s) return reply({ ok: false, error: "site_url" }, 400);
     const chk = await v1LinkCheck(s.url), now = new Date().toISOString();
     const patch: any = { site_url: s.url, domain: s.domain, checked_at: now, link_ok: chk.ok, fails: chk.ok ? 0 : 1 };
     if (chk.ok) patch.link_at = now;
-    if (k) {
-      await sb(`afp_api_keys?uid=eq.${uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
-    } else {
-      const a = (await sb(`afp_accounts?uid=eq.${uid}&select=email,name`))?.[0] || {};
+    if (k) await sb(`afp_api_keys?key=eq.${k.key}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+    else {
       const key = "aifp_" + randomBytes(16).toString("hex");
-      await sb("afp_api_keys", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ key, uid, email: a.email || null, plan: "free", active: true, note: "member", ...patch }) });
-      if (TOKEN) fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: 7057960224, text: `🔑 AI Football Predictor - nouvelle clé API gratuite\n${a.name || ""}\nSite : ${s.url}\nLien vers nous : ${chk.ok ? "trouvé ✅" : "pas encore ❌"}` }) }).catch(() => null);
+      await sb("afp_api_keys", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ key, ...o.set, email: o.email, plan: "free", active: true, note: o.set.tg_id ? "telegram" : "member", ...patch }) });
+      if (TOKEN) fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: 7057960224, text: `🔑 AI Football Predictor - nouvelle clé API gratuite (${o.set.tg_id ? "mini app" : "site"})\n${o.name || ""}\nSite : ${s.url}\nLien vers nous : ${chk.ok ? "trouvé ✅" : "pas encore ❌"}` }) }).catch(() => null);
     }
-    k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
-    return acctOut({ ok: true, key: v1KeyView(k), check: chk.why });
+    k = await get();
+    return reply({ ok: true, key: v1KeyView(k), check: chk.why, limit: await lim() });
   }
-  if (u.pathname === "/api/acct/apikey/check") {
-    if (!k) return acctOut({ ok: false, error: "no_key" }, 404);
-    if (k.checked_at && Date.now() - Date.parse(k.checked_at) < 30e3) return acctOut({ ok: true, key: v1KeyView(k), check: "wait" });
+  if (sub === "/check") {
+    if (!k) return reply({ ok: false, error: "no_key" }, 404);
+    if (k.checked_at && Date.now() - Date.parse(k.checked_at) < 30e3) return reply({ ok: true, key: v1KeyView(k), check: "wait" });
     const chk = await v1LinkCheck(k.site_url), now = new Date().toISOString();
     const patch: any = { checked_at: now };
     if (chk.ok) Object.assign(patch, { link_ok: true, fails: 0, link_at: now }); else Object.assign(patch, { link_ok: false, fails: (k.fails || 0) + 1 });
-    await sb(`afp_api_keys?uid=eq.${uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
-    k = (await sb(`afp_api_keys?uid=eq.${uid}&select=${sel}`))?.[0];
-    return acctOut({ ok: true, key: v1KeyView(k), check: chk.why });
+    await sb(`afp_api_keys?key=eq.${k.key}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+    k = await get();
+    return reply({ ok: true, key: v1KeyView(k), check: chk.why });
   }
-  return acctOut({ ok: false, error: "not found" }, 404);
+  return reply({ ok: false, error: "not found" }, 404);
+}
+async function v1KeyRoutes(req: Request, u: URL, uid: string) { return v1KeyCore(req, u.pathname.replace("/api/acct/apikey", ""), await ownSite(uid), acctOut); }
+async function wstyleCore(req: Request, o: Own, reply: (d: any, s?: number) => Response) {
+  if (!(await o.prem())) return reply({ ok: true, prem: false });
+  const cur = (await sb(`afp_widget_style?${o.q}&select=token,bg,txt,acc,logo&limit=1`))?.[0] || null;
+  if (req.method !== "POST") return reply({ ok: true, prem: true, style: cur });
+  const b: any = await req.json().catch(() => ({}));
+  const col = (x: any) => (/^#[0-9a-f]{6}$/i.test(String(x || "")) ? String(x).toLowerCase() : null);
+  const logo: string | null = String(b.logo || "").trim().slice(0, 300) || null;
+  if (logo && !/^https:\/\/[^\s"'()<>\\]+$/i.test(logo)) return reply({ ok: false, error: "logo" }, 400);
+  const row = { bg: col(b.bg), txt: col(b.txt), acc: col(b.acc), logo, updated_at: new Date().toISOString() };
+  const r = cur ? (await sb(`afp_widget_style?token=eq.${cur.token}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(row) }))?.[0]
+    : (await sb("afp_widget_style", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ ...o.set, ...row }) }))?.[0];
+  return reply({ ok: !!r, prem: true, style: r ? { token: r.token, bg: r.bg, txt: r.txt, acc: r.acc, logo: r.logo } : null });
+}
+async function wstyleRoute(req: Request, uid: string) { return wstyleCore(req, await ownSite(uid), acctOut); }
+// mini app routes (Telegram initData): /api/tg/apikey, /api/tg/apikey/check, /api/tg/wstyle
+async function tgRoutes(req: Request, u: URL) {
+  const init = req.headers.get("x-init-data") || "";
+  if (!checkInit(init)) return out({ ok: false, error: "auth" }, 401);
+  let tu: any = {}; try { tu = JSON.parse(new URLSearchParams(init).get("user") || "{}"); } catch {}
+  if (!tu.id) return out({ ok: false, error: "auth" }, 401);
+  const o = await ownTg(Number(tu.id), tu.first_name || "");
+  if (u.pathname.startsWith("/api/tg/apikey")) return v1KeyCore(req, u.pathname.replace("/api/tg/apikey", ""), o, out);
+  if (u.pathname === "/api/tg/wstyle") return wstyleCore(req, o, out);
+  // 9 nov 2026 (Jeremy): Premium morning summary + favourite clubs alerts (sent by SQL afp_prem_digest / afp_prem_clubs): favourites and switches
+  if (u.pathname === "/api/tg/prem") {
+    const id = Number(tu.id);
+    if (req.method === "POST") {
+      const b: any = await req.json().catch(() => ({})), patch: any = {};
+      if (Array.isArray(b.fav)) patch.fav_teams = [...new Set(b.fav.filter((x: any) => typeof x === "string").map((x: string) => x.trim().slice(0, 60)).filter(Boolean))].slice(0, 40);
+      if (typeof b.digest === "boolean") patch.digest_on = b.digest;
+      if (typeof b.club === "boolean") patch.club_on = b.club;
+      if (Object.keys(patch).length) await sb(`afp_users?tg_id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+    }
+    const r = (await sb(`afp_users?tg_id=eq.${id}&select=premium_until,digest_on,club_on,fav_teams`))?.[0] || {};
+    return out({ ok: true, prem: !!(r.premium_until && Date.parse(r.premium_until) > Date.now()), digest: r.digest_on !== false, club: r.club_on !== false, fav: r.fav_teams || [] });
+  }
+  return out({ ok: false, error: "not found" }, 404);
 }
 // Daily check (cron): a link that disappears 3 checks in a row blocks the key.
 async function v1Cron() {
@@ -469,6 +522,7 @@ async function v1(req: Request, u: URL) {
 }
 export async function handle(req: Request) {
   if (new URL(req.url).pathname.startsWith("/api/v1")) return v1(req, new URL(req.url));
+  if (new URL(req.url).pathname.startsWith("/api/tg/")) { if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS }); return tgRoutes(req, new URL(req.url)); }
   if (new URL(req.url).pathname.startsWith("/api/acct/")) return acctRoutes(req, new URL(req.url));
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   const u = new URL(req.url);
@@ -477,6 +531,18 @@ export async function handle(req: Request) {
   if (!checkInit(req.headers.get("x-init-data") || "") && req.headers.get("x-web") !== "1") return out({ error: "auth" }, 401);
   try {
     const n = Number(u.searchParams.get("n"));
+    // 9 nov 2026 (Jeremy, "faut revoir le prix", 250 ⭐ chosen): ONE Premium, monthly Stars subscription, Telegram only.
+    // No ads (app + linked website) + Premium widgets (colours, logo, no Sorare card) + API Premium (50 000 calls/day).
+    // The AFP bot activates it on successful_payment (payload afp_sub:premium, any amount).
+    if (u.pathname === "/api/premium" && req.method === "POST") {
+      if (!checkInit(req.headers.get("x-init-data") || "")) return out({ ok: false, error: "telegram" }, 401);
+      const b: any = await req.json().catch(() => ({})), fr = b.lang === "fr", title = "AIFP Premium";
+      const description = fr ? "Sans pub dans l'appli et sur le site, widgets à tes couleurs avec ton logo, API 50 000 requêtes par jour. 1 mois, renouvelé chaque mois, résiliable à tout moment."
+        : "No ads in the app and on the website, widgets in your colours with your logo, API 50,000 requests a day. 1 month, renewed monthly, cancel anytime.";
+      const r: any = await (await fetch(`https://api.telegram.org/bot${TOKEN}/createInvoiceLink`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, description, payload: "afp_sub:premium", currency: "XTR", prices: [{ label: title, amount: PREM_STARS }], subscription_period: 2592000 }) })).json().catch(() => null);
+      if (!r?.ok) { console.log("premium invoice error", JSON.stringify(r)); return out({ ok: false }); }
+      return out({ ok: true, link: r.result, stars: PREM_STARS });
+    }
     if (u.pathname === "/api/team") return out(await team(n, u.searchParams.get("s") || "h"));
     if (u.pathname === "/api/league") return out(await league(n));
     if (u.pathname === "/api/player") return out(await player(n, Number(u.searchParams.get("id"))));
