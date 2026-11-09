@@ -179,45 +179,45 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 
 ## Players (top scorers)
 - [L. Sinayoko (Paris FC)](https://aifootpredictor.com/player/lassine-sinayoko/): season stats and chance to score in the next match
+- [A. Gouiri (Marseille)](https://aifootpredictor.com/player/amine-gouiri/): season stats and chance to score in the next match
 - [E. Lepaul (Rennes)](https://aifootpredictor.com/player/esteban-lepaul/): season stats and chance to score in the next match
 - [C. Archer (Auxerre)](https://aifootpredictor.com/player/cameron-archer/): season stats and chance to score in the next match
-- [A. Gouiri (Marseille)](https://aifootpredictor.com/player/amine-gouiri/): season stats and chance to score in the next match
 - [E. Wahi (Nice)](https://aifootpredictor.com/player/sepe-wahi/): season stats and chance to score in the next match
-- [C. Tengstedt (Toulouse)](https://aifootpredictor.com/player/casper-tengstedt/): season stats and chance to score in the next match
-- [Gessime Yassine (Strasbourg)](https://aifootpredictor.com/player/gessime-yassine/): season stats and chance to score in the next match
-- [Ferran Torres (Paris Saint Germain)](https://aifootpredictor.com/player/ferran-torres-garcia/): season stats and chance to score in the next match
 - [L. Ajorque (Stade Brestois 29)](https://aifootpredictor.com/player/ludovic-ajorque/): season stats and chance to score in the next match
-- [S. Szymański (Rennes)](https://aifootpredictor.com/player/sebastian-szymanski/): season stats and chance to score in the next match
+- [B. Dia (Rennes)](https://aifootpredictor.com/player/boulaye-dia/): season stats and chance to score in the next match
+- [C. Tengstedt (Toulouse)](https://aifootpredictor.com/player/casper-tengstedt/): season stats and chance to score in the next match
+- [F. Thauvin (Lens)](https://aifootpredictor.com/player/florian-thauvin/): season stats and chance to score in the next match
+- [Gessime Yassine (Strasbourg)](https://aifootpredictor.com/player/gessime-yassine/): season stats and chance to score in the next match
 - [E. Haaland (Manchester City)](https://aifootpredictor.com/player/erling-braut-haaland/): season stats and chance to score in the next match
-- [T. Barry (Everton)](https://aifootpredictor.com/player/thierno-barry/): season stats and chance to score in the next match
 - [A. Isak (Liverpool)](https://aifootpredictor.com/player/alexander-isak/): season stats and chance to score in the next match
+- [T. Barry (Everton)](https://aifootpredictor.com/player/thierno-barry/): season stats and chance to score in the next match
+- [N. Jackson (Aston Villa)](https://aifootpredictor.com/player/nicolas-jackson/): season stats and chance to score in the next match
+- [Evanilson (Bournemouth)](https://aifootpredictor.com/player/francisco-de-lima-barbosa/): season stats and chance to score in the next match
 - [João Pedro (Chelsea)](https://aifootpredictor.com/player/joao-junqueira-de-jesus/): season stats and chance to score in the next match
 - [R. Cherki (Manchester City)](https://aifootpredictor.com/player/mathis-cherki/): season stats and chance to score in the next match
 - [M. Rogers (Chelsea)](https://aifootpredictor.com/player/morgan-rogers/): season stats and chance to score in the next match
 - [M. Tavernier (Bournemouth)](https://aifootpredictor.com/player/marcus-tavernier/): season stats and chance to score in the next match
-- [N. Jackson (Aston Villa)](https://aifootpredictor.com/player/nicolas-jackson/): season stats and chance to score in the next match
-- [Evanilson (Bournemouth)](https://aifootpredictor.com/player/francisco-de-lima-barbosa/): season stats and chance to score in the next match
 - [B. Mbeumo (Manchester United)](https://aifootpredictor.com/player/bryan-mbeumo/): season stats and chance to score in the next match
 - [Raphinha (Barcelona)](https://aifootpredictor.com/player/raphael-dias-belloli/): season stats and chance to score in the next match
 - [Kylian Mbappé (Real Madrid)](https://aifootpredictor.com/player/kylian-mbappe-lottin/): season stats and chance to score in the next match
 - [Lamine Yamal (Barcelona)](https://aifootpredictor.com/player/lamine-yamal-nasraoui-ebana/): season stats and chance to score in the next match
 - [M. Zabiri (Racing Santander)](https://aifootpredictor.com/player/mohamed-zabiri/): season stats and chance to score in the next match
 - [A. Budimir (Osasuna)](https://aifootpredictor.com/player/ante-budimir/): season stats and chance to score in the next match
+- [Fermín (Barcelona)](https://aifootpredictor.com/player/fermin-lopez-martin/): season stats and chance to score in the next match
 - [Sergio Camello (Rayo Vallecano)](https://aifootpredictor.com/player/sergio-camello-perez/): season stats and chance to score in the next match
 - [Roberto Fernández (Espanyol)](https://aifootpredictor.com/player/roberto-fernandez-jaen/): season stats and chance to score in the next match
 - [Fer Niño (Elche)](https://aifootpredictor.com/player/fernando-nino-rodriguez/): season stats and chance to score in the next match
-- [Fermín (Barcelona)](https://aifootpredictor.com/player/fermin-lopez-martin/): season stats and chance to score in the next match
 - [Álex Baena (Atletico Madrid)](https://aifootpredictor.com/player/alejandro-baena-rodriguez/): season stats and chance to score in the next match
 - [Gustavo Varela (Monza)](https://aifootpredictor.com/player/gustavo-pereira-de-sousa-varela/): season stats and chance to score in the next match
 - [D. Malen (AS Roma)](https://aifootpredictor.com/player/donyell-malen/): season stats and chance to score in the next match
 - [A. Raimondo (Frosinone)](https://aifootpredictor.com/player/antonio-raimondo/): season stats and chance to score in the next match
 - [N. Krstović (Atalanta)](https://aifootpredictor.com/player/nikola-krstovic/): season stats and chance to score in the next match
-- [A. Rabiot (AC Milan)](https://aifootpredictor.com/player/adrien-rabiot-provost/): season stats and chance to score in the next match
 - [M. Thuram (Inter)](https://aifootpredictor.com/player/marcus-thuram-ulien/): season stats and chance to score in the next match
+- [A. Rabiot (AC Milan)](https://aifootpredictor.com/player/adrien-rabiot-provost/): season stats and chance to score in the next match
 - [T. Douvikas (Como)](https://aifootpredictor.com/player/anastasios-douvikas/): season stats and chance to score in the next match
+- [A. Cissè (AC Milan)](https://aifootpredictor.com/player/alphadjo-cisse/): season stats and chance to score in the next match
 - [G. Calò (Frosinone)](https://aifootpredictor.com/player/giacomo-calo/): season stats and chance to score in the next match
 - [D. Maldini (Cagliari)](https://aifootpredictor.com/player/daniel-maldini/): season stats and chance to score in the next match
-- [T. Noslin (Lazio)](https://aifootpredictor.com/player/tijjani-noslin/): season stats and chance to score in the next match
 - [N. Füllkrug (Werder Bremen)](https://aifootpredictor.com/player/niclas-fullkrug/): season stats and chance to score in the next match
 - [P. Schick (Bayer Leverkusen)](https://aifootpredictor.com/player/patrik-schick/): season stats and chance to score in the next match
 - [M. Olise (Bayern München)](https://aifootpredictor.com/player/michael-olise/): season stats and chance to score in the next match
@@ -226,37 +226,37 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [C. Nkunku (RB Leipzig)](https://aifootpredictor.com/player/christopher-nkunku/): season stats and chance to score in the next match
 - [J. Burkardt (Eintracht Frankfurt)](https://aifootpredictor.com/player/jonathan-burkardt/): season stats and chance to score in the next match
 - [E. Demirović (VfB Stuttgart)](https://aifootpredictor.com/player/ermedin-demirovic/): season stats and chance to score in the next match
+- [Y. Suzuki (SC Freiburg)](https://aifootpredictor.com/player/yuito-suzuki/): season stats and chance to score in the next match
 - [Rômulo (RB Leipzig)](https://aifootpredictor.com/player/romulo-cardoso-da-cruz/): season stats and chance to score in the next match
-- [M. Gregoritsch (FC Augsburg)](https://aifootpredictor.com/player/michael-gregoritsch/): season stats and chance to score in the next match
 - [V. Pavlidis (Benfica)](https://aifootpredictor.com/player/vangelis-pavlidis/): season stats and chance to score in the next match
 - [L. Suárez (Sporting CP)](https://aifootpredictor.com/player/luis-suarez-charris/): season stats and chance to score in the next match
 - [G. Prestianni (Benfica)](https://aifootpredictor.com/player/gianluca-prestianni-gross/): season stats and chance to score in the next match
-- [André Clóvis (Academico Viseu)](https://aifootpredictor.com/player/andre-silva-filho/): season stats and chance to score in the next match
 - [Borja Sainz (FC Porto)](https://aifootpredictor.com/player/borja-sainz-eguskiza/): season stats and chance to score in the next match
 - [Pau Victor (SC Braga)](https://aifootpredictor.com/player/pau-victor-delgado/): season stats and chance to score in the next match
+- [André Clóvis (Academico Viseu)](https://aifootpredictor.com/player/andre-silva-filho/): season stats and chance to score in the next match
+- [L. Antonetti (Estrela)](https://aifootpredictor.com/player/leandro-antonetti-lopez/): season stats and chance to score in the next match
 - [Barbero (Arouca)](https://aifootpredictor.com/player/ivan-martinez-gonzalvez/): season stats and chance to score in the next match
 - [Gabri Veiga (FC Porto)](https://aifootpredictor.com/player/gabriel-veiga-novas/): season stats and chance to score in the next match
 - [Gonçalo Paciência (Santa Clara)](https://aifootpredictor.com/player/goncalo-mendes-paciencia/): season stats and chance to score in the next match
-- [G. Koutsias (Famalicao)](https://aifootpredictor.com/player/georgios-koutsias/): season stats and chance to score in the next match
 - [S. Tengstedt (GO Ahead Eagles)](https://aifootpredictor.com/player/s-ren-stergaard-tengstedt/): season stats and chance to score in the next match
+- [S. Mijnans (PSV Eindhoven)](https://aifootpredictor.com/player/sven-mijnans/): season stats and chance to score in the next match
 - [B. Willumsson (Groningen)](https://aifootpredictor.com/player/brynjolfur-andersen-willumsson/): season stats and chance to score in the next match
 - [W. Weghorst (Twente)](https://aifootpredictor.com/player/wout-weghorst/): season stats and chance to score in the next match
-- [M. Zonneveld (Sparta Rotterdam)](https://aifootpredictor.com/player/milan-zonneveld/): season stats and chance to score in the next match
-- [G. Til (PSV Eindhoven)](https://aifootpredictor.com/player/guus-til/): season stats and chance to score in the next match
 - [T. van Bergen (Groningen)](https://aifootpredictor.com/player/thom-van-bergen/): season stats and chance to score in the next match
-- [J. Brandt (Ajax)](https://aifootpredictor.com/player/julian-brandt/): season stats and chance to score in the next match
-- [J. Trenskow (Heerenveen)](https://aifootpredictor.com/player/jacob-bennedsen-trenskow/): season stats and chance to score in the next match
+- [M. Zonneveld (Sparta Rotterdam)](https://aifootpredictor.com/player/milan-zonneveld/): season stats and chance to score in the next match
 - [A. Hadj-Moussa (Feyenoord)](https://aifootpredictor.com/player/anis-hadj-moussa/): season stats and chance to score in the next match
-- [S. Mijnans (PSV Eindhoven)](https://aifootpredictor.com/player/sven-mijnans/): season stats and chance to score in the next match
+- [G. Til (PSV Eindhoven)](https://aifootpredictor.com/player/guus-til/): season stats and chance to score in the next match
+- [T. Arokodare (Ajax)](https://aifootpredictor.com/player/toluwalase-arokodare/): season stats and chance to score in the next match
+- [J. Trenskow (Heerenveen)](https://aifootpredictor.com/player/jacob-bennedsen-trenskow/): season stats and chance to score in the next match
 - [G. Orban (Amed)](https://aifootpredictor.com/player/gift-orban/): season stats and chance to score in the next match
-- [V. Osimhen (Galatasaray)](https://aifootpredictor.com/player/victor-osimhen/): season stats and chance to score in the next match
 - [Mohamed Salah (Trabzonspor)](https://aifootpredictor.com/player/mohamed-salah-hamed-mahrous-ghaly/): season stats and chance to score in the next match
+- [V. Osimhen (Galatasaray)](https://aifootpredictor.com/player/victor-osimhen/): season stats and chance to score in the next match
+- [D. Vlahović (Beşiktaş)](https://aifootpredictor.com/player/dusan-vlahovic/): season stats and chance to score in the next match
 - [E. Shomurodov (Başakşehir)](https://aifootpredictor.com/player/eldor-azamat-shomurodov/): season stats and chance to score in the next match
 - [V. Muriqi (Fenerbahçe)](https://aifootpredictor.com/player/vedat-muriqi/): season stats and chance to score in the next match
 - [A. Benedyczak (Kasımpaşa)](https://aifootpredictor.com/player/adrian-benedyczak/): season stats and chance to score in the next match
-- [D. Vlahović (Beşiktaş)](https://aifootpredictor.com/player/dusan-vlahovic/): season stats and chance to score in the next match
 - [Juan (Göztepe)](https://aifootpredictor.com/player/juan-santos-da-silva/): season stats and chance to score in the next match
-- [D. Sabia (Amed)](https://aifootpredictor.com/player/diaa-sabia/): season stats and chance to score in the next match
+- [M. Greenwood (Fenerbahçe)](https://aifootpredictor.com/player/mason-greenwood/): season stats and chance to score in the next match
 - [C. Ramírez (Çorum FK)](https://aifootpredictor.com/player/jesus-ramirez-diaz/): season stats and chance to score in the next match
 
 ## Follow
