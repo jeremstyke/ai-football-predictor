@@ -1033,7 +1033,23 @@ export async function run(mode: string) {
   // 8 nov 2026 (Jeremy): "fais un article sur le blog avec les nouveautés à chaque fois et c'est cet article que tu partages"
   if (mode === "weekly") { await loadCss(); await weekly(addDays(weekStart(parisDay()), -7)); await indexes(); console.log("blog run done weekly"); return; }
   if (mode === "guides") { await loadCss(); await rerenderGuides(); await indexes(); console.log("blog run done guides"); return; }
-  if (mode === "announce3") {
+  if (mode === "announce4") {
+    // 9 nov 2026 09:30 (Jeremy, "Je te fais confiance publie la"): weekly recap share, links to the blog article. Sent once.
+    if ((await sb(`afp_tdata?key=eq.announce4:2026-11-09&select=key`))?.length) { console.log("announce4 already done"); return; }
+    const art = `${SITE}blog/football-weekly-recap-2026-11-02/`;
+    const chat = (await sb("afp_config?key=eq.channel_id&select=value"))?.[0]?.value || "@aifootballpredictorchannel";
+    const text = "📊 <b>Weekly recap: 6 to 8 November</b>\n\n• The most likely outcome happened in 88 of 166 matches (53 %), vs 52 % announced\n• At 65 % or more: 25 of 27 happened\n• Our model alone vs the market: 54-54 on 99 matches\n• Biggest miss: Partizan at 74 %, lost 1-2 to Macva\n\nMisses included, every week. Full recap 👇";
+    const r = await fetch(`https://api.telegram.org/bot${Bun.env.TELEGRAM_BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chat, text, parse_mode: "HTML", link_preview_options: { is_disabled: true }, reply_markup: { inline_keyboard: [[{ text: "📝 Read the weekly recap", url: art + "?src=channel" }], [{ text: "⚽ Open the app", url: "https://t.me/ai_football_predictorbot/app?startapp=src_channel" }]] } }) });
+    const tj: any = await r.json().catch(() => null);
+    console.log("announce4 telegram", tj?.ok, tj?.description || "", tj?.result?.message_id);
+    let uri = null; const s = await bskyLogin();
+    if (s) uri = await bskyPost(s, { text: "Our AI's first weekly recap ⚽🤖\nThe most likely outcome happened in 88 of 166 matches (53 %), vs 52 % announced. At 65 %+: 25 of 27. Model alone vs the market: 54-54. Biggest miss: Partizan at 74 %, lost 1-2 to Macva.", url: art + "?src=bsky", title: "Weekly recap: 53 % of the most likely outcomes happened", desc: "Announced vs happened, model vs market, surest calls and biggest misses, 6 to 8 November 2026.", img: `${SITE}icon-512.png` });
+    console.log("announce4 bsky", uri);
+    await sb("afp_tdata?on_conflict=key", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ key: "announce4:2026-11-09", data: { tg: tj?.ok || false, tg_err: tj?.description || null, msg: tj?.result?.message_id || null, bsky: uri }, updated_at: new Date().toISOString() }) });
+    return;
+  }
+  
+if (mode === "announce3") {
     // 9 nov 2026 09:00 (Jeremy, "oui demain matin vers 9h"): "Beat the model" update announcement, approved texts, links to the blog article. Sent once.
     if ((await sb(`afp_tdata?key=eq.announce3:2026-11-09&select=key`))?.length) { console.log("announce3 already done"); return; }
     const art = `${SITE}blog/beat-the-model-results-stats-weekly-challenge/`;
