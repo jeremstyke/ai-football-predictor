@@ -172,10 +172,10 @@ For the big matches, our AI writes a **preview from our own data only**: probabi
 <a id="free-api"></a>
 ## 🔌 Free football API
 
-**Free, 1,000 requests a day.** Our win, draw and loss probabilities, expected goals and most likely score for 29 competitions, as JSON, for your website, app or bot. It only contains our own calculations: no odds, no logos, no raw provider data.
+**Free, 5,000 requests a day.** Our win, draw and loss probabilities, expected goals and most likely score for 29 competitions, as JSON, for your website, app or bot. It only contains our own calculations: no odds, no logos, no raw provider data.
 
 [![Free](https://img.shields.io/badge/price-free-3ee0a8?style=flat-square)](https://aifootpredictor.com/api/?src=github)
-[![Requests](https://img.shields.io/badge/requests-1000%2Fday-4cc3ff?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+[![Requests](https://img.shields.io/badge/requests-5000%2Fday-4cc3ff?style=flat-square)](https://aifootpredictor.com/api/?src=github)
 [![Auth](https://img.shields.io/badge/auth-X--API--Key-f5b84a?style=flat-square)](https://aifootpredictor.com/api/?src=github)
 [![Format](https://img.shields.io/badge/format-JSON-7d8ba1?style=flat-square)](https://aifootpredictor.com/api/?src=github)
 [![CORS](https://img.shields.io/badge/CORS-yes-3ee0a8?style=flat-square)](https://aifootpredictor.com/api/?src=github)
