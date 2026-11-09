@@ -26,6 +26,7 @@
 - [Widget gratuit pour votre site](#widget-gratuit-pour-votre-site)
 - [Articles avant-match](#articles-avant-match)
 - [API foot gratuite](#free-api)
+- [AIFP Pro, pour les sites et médias](#pro)
 - [Questions fréquentes](#questions-fréquentes)
 
 ---
@@ -174,12 +175,33 @@ Chaque réponse contient un bloc `attribution` avec le lien prêt à afficher.
 
 ---
 
+<a id="pro"></a>
+## 💼 AIFP Pro, pour les sites et médias
+
+Pour les fans, tout reste gratuit. **AIFP Pro** s'adresse aux sites, blogs, médias et applis foot qui utilisent nos données pour leur activité.
+
+| | Gratuit | 💼 Pro |
+|---|:-:|:-:|
+| Probabilités, live, alertes, Mon espace | ✅ | ✅ |
+| Requêtes API par jour | 5 000 | **50 000** |
+| Lien vers notre site | obligatoire | **facultatif** |
+| Historique des matchs avec résultats, scores en direct, plus de marchés | | ✅ |
+| Widgets à vos couleurs, avec votre logo | | ✅ |
+| Sans pub sur le site et les widgets | | ✅ |
+| Usage commercial (1 site ou 1 appli) | | ✅ |
+
+**7 jours gratuits**, puis **19 $ HT par mois** ou **199,99 $ HT par an**. Résiliable à tout moment.
+
+**[→ Découvrir AIFP Pro](https://aifootpredictor.com/fr/pro/?src=github)**
+
+---
+
 ## Questions fréquentes
 
 <details>
 <summary><b>AI Football Predictor est-il gratuit ?</b></summary>
 
-Oui. Le site, la web app, la mini app Telegram et le widget sont gratuits.
+Oui. Le site, la web app, la mini app Telegram, le widget et l'API (5 000 requêtes par jour) sont gratuits. [AIFP Pro](#pro) s'adresse seulement aux sites et médias qui ont besoin de plus.
 </details>
 
 <details>
