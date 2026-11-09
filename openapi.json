@@ -5,7 +5,7 @@
             "url": "https://aifootpredictor.com/api/"
         },
         "version": "1.0.0",
-        "description": "Free football match probabilities, expected goals, most likely score, predicted tables and pre-match article excerpts for 29 competitions. Free key at https://aifootpredictor.com/api/ (1,000 requests a day). Rule: show a visible link to aifootpredictor.com on every page that displays this data; the `attribution` block of each response is ready to display.",
+        "description": "Free football match probabilities, expected goals, most likely score, predicted tables and pre-match article excerpts for 29 competitions. Free key at https://aifootpredictor.com/api/ (5,000 requests a day). Rule: show a visible link to aifootpredictor.com on every page that displays this data; the `attribution` block of each response is ready to display.",
         "termsOfService": "https://aifootpredictor.com/api/"
     },
     "paths": {
