@@ -169,20 +169,84 @@ For the big matches, our AI writes a **preview from our own data only**: probabi
 
 <br>
 
-## 🔌 Football probabilities API
+<a id="free-api"></a>
+## 🔌 Free football API
 
-For media, apps and developers.
+**Free, 1,000 requests a day.** Our win, draw and loss probabilities, expected goals and most likely score for 29 competitions, as JSON, for your website, app or bot. It only contains our own calculations: no odds, no logos, no raw provider data.
+
+[![Free](https://img.shields.io/badge/price-free-3ee0a8?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+[![Requests](https://img.shields.io/badge/requests-1000%2Fday-4cc3ff?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+[![Auth](https://img.shields.io/badge/auth-X--API--Key-f5b84a?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+[![Format](https://img.shields.io/badge/format-JSON-7d8ba1?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+[![CORS](https://img.shields.io/badge/CORS-yes-3ee0a8?style=flat-square)](https://aifootpredictor.com/api/?src=github)
+
+### Get a key in 2 minutes
+
+1. Go to **[aifootpredictor.com/api](https://aifootpredictor.com/api/?src=github)** and sign in with Google.
+2. Add this link to the page that will show the data:
+   ```html
+   <a href="https://aifootpredictor.com/?utm_source=api" target="_blank" rel="noopener">Probabilities by AI Football Predictor</a>
+   ```
+3. Enter that page's address. Your key is created at once and the link is checked automatically.
+
+> **The one rule:** a visible link to aifootpredictor.com on every page that shows our data. You get 3 days to add it, then the key is blocked until the link is found. It is checked once a day.
+
+### Endpoints
+
+Base URL: `https://afp-blog-production.up.railway.app/api/v1`
 
 | Endpoint | Returns |
 |---|---|
-| `GET /matches` | Upcoming matches: 1 / X / 2, xG, most likely score, over 2.5 |
-| `GET /live` | Live matches with in-play probability |
-| `GET /tables` | Predicted end-of-season tables |
-| `GET /teams/{id}` | Form, next matches, season projection |
-| `GET /reliability` | The public track record |
-| `GET /articles` | Ready-to-publish previews in English and French, with image |
+| `GET /matches` | A day's matches: 1 / X / 2 probabilities, most likely outcome, over 2.5 goals, most likely score, expected goals, and the result once finished. Params: `date` (YYYY-MM-DD), `competition`, `status` (`upcoming`, `finished`) |
+| `GET /competitions` | Competition codes covered, with matches over the last 30 days |
+| `GET /reliability` | Brier score and log loss on every finished match, vs the market and a random guess |
 
-**[→ Docs and early access](https://aifootpredictor.com/api/?src=github)**
+### Example
+
+```bash
+curl -H "X-API-Key: YOUR_KEY" "https://afp-blog-production.up.railway.app/api/v1/matches?status=upcoming"
+```
+
+```json
+{
+  "attribution": {
+    "text": "Probabilities by AI Football Predictor",
+    "url": "https://aifootpredictor.com/?utm_source=api",
+    "html": "<a href=\"https://aifootpredictor.com/?utm_source=api\" target=\"_blank\" rel=\"noopener\">Probabilities by AI Football Predictor</a>",
+    "required": true
+  },
+  "meta": { "calls_left_today": 999, "date": "2026-11-08", "count": 75 },
+  "data": [
+    {
+      "id": "ARG|2026-11-08|Instituto|Newells Old Boys",
+      "competition": "ARG",
+      "kickoff": "2026-11-08T01:00:00+00:00",
+      "home": "Instituto",
+      "away": "Newells Old Boys",
+      "probabilities": { "home": 0.503, "draw": 0.293, "away": 0.204 },
+      "most_likely": { "outcome": "home", "probability": 0.503 },
+      "over_2_5_goals": 0.386,
+      "likely_score": { "score": "1-0", "probability": 0.144 },
+      "expected_goals": { "home": 1.43, "away": 0.8 },
+      "status": "finished",
+      "result": { "home": 2, "away": 2, "most_likely_happened": false },
+      "url": "https://aifootpredictor.com/?tab=m145&utm_source=api&utm_medium=yoursite.com"
+    }
+  ]
+}
+```
+
+```js
+fetch("https://afp-blog-production.up.railway.app/api/v1/matches", { headers: { "X-API-Key": "YOUR_KEY" } })
+  .then(r => r.json())
+  .then(({ attribution, data }) => {
+    // display data, and always display attribution.html on the page
+  });
+```
+
+Errors come back as JSON with `error` and `message`: `401 invalid_key`, `403 link_missing`, `403 wrong_origin`, `429 daily_limit`. Headers `X-RateLimit-Limit` and `X-RateLimit-Remaining` are sent on every call.
+
+**[→ Full docs and your free key](https://aifootpredictor.com/api/?src=github)**
 
 <br>
 
@@ -224,8 +288,8 @@ A 55% chance means the other outcomes happen 45% of the time. One match proves n
 
 <div align="center">
 
-**AI Football Predictor** · made by [@jeremstyke](https://t.me/jeremstyke) · [🇫🇷 Version française](README.fr.md)
+**AI Football Predictor** · [aifootpredictor.com](https://aifootpredictor.com/?src=github) · [🇫🇷 Version française](README.fr.md)
 
-<sub>football predictions · soccer predictions · AI football predictions · match probabilities · win draw loss probability · expected goals · xG · Poisson model · 1X2 · over 2.5 goals · BTTS · Premier League predictions · Champions League predictions · LaLiga predictions · Serie A predictions · Bundesliga predictions · Ligue 1 predictions · football widget · football API</sub>
+<sub>football predictions · soccer predictions · AI football predictions · match probabilities · win draw loss probability · expected goals · xG · Poisson model · 1X2 · over 2.5 goals · BTTS · Premier League predictions · Champions League predictions · LaLiga predictions · Serie A predictions · Bundesliga predictions · Ligue 1 predictions · football widget · free football API · soccer API</sub>
 
 </div>
