@@ -756,13 +756,14 @@ async function apiPages() {
   const r3 = (x: any) => x == null ? null : Math.round(Number(x) * 1000) / 1000;
   const pvx = ex && ex.af_id ? ((await sb(`afp_mdata?af_id=eq.${ex.af_id}&select=data`))?.[0]?.data?.pv || null) : null; /* 8 nov 2026: AI match preview in the API */
   const sample = ex ? {
-    id: ex.n, kickoff: ex.kickoff, competition: ex.league, home: ex.home, away: ex.away,
+    id: ex.n, kickoff: ex.kickoff, competition: ex.league, home: ex.home, away: ex.away, url: `${SITE}?tab=m${ex.n}&utm_source=api`,
     probabilities: { home: r3(ex.ph), draw: r3(ex.pd), away: r3(ex.pa) },
     expected_goals: { home: Number(ex.xg_h), away: Number(ex.xg_a) },
     most_likely_score: { score: ex.score, probability: r3(ex.score_p) },
     over_2_5_goals: r3(ex.o25), preview: pvx ? { en: pvx.en, fr: pvx.fr } : null, article: artOf("en") ? { en: artJ("en"), fr: artJ("fr") } : null, locked: false, locks_at: new Date(Date.parse(ex.kickoff) - 3 * 3600000).toISOString(),
   } : null;
-  const json = sample ? JSON.stringify({ data: [sample] }, null, 2) : "";
+  // 9 nov 2026 (Jeremy, "le lien vers le site doit être intégré directement dans l'API"): every response carries the attribution to display, and every match its page URL
+  const json = sample ? JSON.stringify({ attribution: { text: "Probabilities by AI Football Predictor", url: `${SITE}?utm_source=api`, html: `<a href="${SITE}?utm_source=api">Probabilities by AI Football Predictor</a>`, required: true }, data: [sample] }, null, 2) : "";
   for (const lang of ["en", "fr"]) {
     const fr = lang === "fr", url = SITE + (fr ? "fr/api/" : "api/"), alt = SITE + (fr ? "api/" : "fr/api/");
     // 7 nov 2026 (Jeremy, "le site sera la vitrine"): early access by email on the site (rpc afp_signup), not through the bot
@@ -783,13 +784,13 @@ async function apiPages() {
       : [["How much does the API cost?", "From €0 to €29 a month depending on volume and data, plus a custom Business plan. The plans are detailed above on this page."], ["Which competitions are covered?", "29 competitions, including the Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, the Champions League and national cups."], ["Are the probabilities reliable?", "You can check it yourself: every finished match since launch is published with the chance we gave and the real result, on the Reliability page. We also compare our numbers with the bookmakers'. All the data is downloadable."], ["Can I use it for a betting site?", "We provide probabilities for information, not betting advice. 18+."]];
     // 9 nov 2026 (Jeremy, "refais les formules"): plans with our own data only (no raw scores, stats or logos resold)
     const PL = fr ? [
-      ["Free", "0 €", ["100 requêtes par jour", "Probabilités 1 / N / 2 : 5 grands championnats et Ligue des champions", "10 articles avant-match par mois", "Lien vers aifootpredictor.com obligatoire"]],
+      ["Free", "0 €", ["100 requêtes par jour", "Probabilités 1 / N / 2 : 5 grands championnats et Ligue des champions", "10 articles avant-match par mois", "Lien vers aifootpredictor.com obligatoire : il est fourni prêt à afficher dans chaque réponse"]],
       ["Starter", "5 € / mois", ["1 000 requêtes par jour", "Les 29 compétitions", "Buts attendus, score le plus probable, plus de 2,5 buts", "Fiabilité (historique verrouillé)", "60 articles par mois, lien obligatoire"]],
       ["Content", "12 € / mois", ["Tout Starter", "Articles avant-match illimités en français et en anglais, sans lien obligatoire", "Classements probables de fin de saison"]],
       ["Pro", "29 € / mois", ["10 000 requêtes par jour", "Tout Content", "Probabilités en direct pendant les matchs", "Projections par équipe", "Usage commercial sans mention"]],
       ["Business", "Sur devis", ["Gros volumes et compétitions sur mesure", "Envoi automatique à chaque mise à jour (webhooks)", "Support prioritaire"]],
     ] : [
-      ["Free", "€0", ["100 requests a day", "1 / X / 2 probabilities: top 5 leagues and Champions League", "10 pre-match articles a month", "Link to aifootpredictor.com required"]],
+      ["Free", "€0", ["100 requests a day", "1 / X / 2 probabilities: top 5 leagues and Champions League", "10 pre-match articles a month", "Link to aifootpredictor.com required: it comes ready to display in every response"]],
       ["Starter", "€5 / month", ["1,000 requests a day", "All 29 competitions", "Expected goals, most likely score, over 2.5 goals", "Reliability (locked history)", "60 articles a month, link required"]],
       ["Content", "€12 / month", ["Everything in Starter", "Unlimited pre-match articles in English and French, no link required", "Predicted end-of-season tables"]],
       ["Pro", "€29 / month", ["10,000 requests a day", "Everything in Content", "Live probabilities during matches", "Team projections", "Commercial use without credit"]],
