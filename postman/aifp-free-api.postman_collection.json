@@ -1,0 +1,177 @@
+{
+    "info": {
+        "name": "AI Football Predictor free API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Free key at https://aifootpredictor.com/api/ . Show the attribution link on every page that displays the data."
+    },
+    "item": [
+        {
+            "name": "Upcoming matches",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/matches?status=upcoming",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "matches"
+                    ],
+                    "query": [
+                        {
+                            "key": "status",
+                            "value": "upcoming"
+                        }
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        },
+        {
+            "name": "Matches of a day",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/matches?date=2026-11-08",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "matches"
+                    ],
+                    "query": [
+                        {
+                            "key": "date",
+                            "value": "2026-11-08"
+                        }
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        },
+        {
+            "name": "Article excerpts (EN)",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/articles?lang=en&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "articles"
+                    ],
+                    "query": [
+                        {
+                            "key": "lang",
+                            "value": "en"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10"
+                        }
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        },
+        {
+            "name": "Predicted table - Premier League",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/tables?competition=E0",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "tables"
+                    ],
+                    "query": [
+                        {
+                            "key": "competition",
+                            "value": "E0"
+                        }
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        },
+        {
+            "name": "Competitions",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/competitions",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "competitions"
+                    ],
+                    "query": [
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        },
+        {
+            "name": "Reliability",
+            "request": {
+                "url": {
+                    "raw": "{{baseUrl}}/reliability",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reliability"
+                    ],
+                    "query": [
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "X-API-Key",
+                        "value": "{{apiKey}}"
+                    }
+                ],
+                "method": "GET"
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://api.aifootpredictor.com/api/v1"
+        },
+        {
+            "key": "apiKey",
+            "value": "YOUR_KEY"
+        }
+    ]
+}
