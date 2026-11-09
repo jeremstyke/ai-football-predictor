@@ -198,6 +198,7 @@ Base URL: `https://api.aifootpredictor.com/api/v1`
 | Endpoint | Returns |
 |---|---|
 | `GET /matches` | A day's matches: 1 / X / 2 probabilities, most likely outcome, over 2.5 goals, most likely score, expected goals, and the result once finished. Params: `date` (YYYY-MM-DD), `competition`, `status` (`upcoming`, `finished`) |
+| `GET /articles` | Our AI-written pre-match articles (EN or FR): title, lede and first paragraph, with a « Read the full analysis » link to show under it. Params: `lang`, `date`, `limit` |
 | `GET /competitions` | Competition codes covered, with matches over the last 30 days |
 | `GET /reliability` | Brier score and log loss on every finished match, vs the market and a random guess |
 
