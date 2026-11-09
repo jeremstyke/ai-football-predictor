@@ -197,8 +197,9 @@ Base URL: `https://api.aifootpredictor.com/api/v1`
 
 | Endpoint | Returns |
 |---|---|
-| `GET /matches` | A day's matches: 1 / X / 2 probabilities, most likely outcome, over 2.5 goals, most likely score, expected goals, and the result once finished. Params: `date` (YYYY-MM-DD), `competition`, `status` (`upcoming`, `finished`) |
+| `GET /matches` | A day's matches: 1 / X / 2 probabilities, most likely outcome, double chance, over 2.5 goals, both teams to score, clean sheets, top 5 scores, expected goals, and the result once finished. Params: `date` (YYYY-MM-DD), `competition`, `status` (`upcoming`, `finished`) |
 | `GET /articles` | Our AI-written pre-match articles (EN or FR): title, lede and first paragraph, with a « Read the full analysis » link to show under it. Params: `lang`, `date`, `limit` |
+| `GET /tables` | Predicted end-of-season table from 20,000 nightly simulations: expected points, title, top 4 and relegation chances, attack and defence ratings. Param: `competition` (`E0`, `SP1`, `I1`, `D1`, `F1`, `P1`, `N1`, `T1`) |
 | `GET /competitions` | Competition codes covered, with matches over the last 30 days |
 | `GET /reliability` | Brier score and log loss on every finished match, vs the market and a random guess |
 
@@ -244,6 +245,8 @@ fetch("https://api.aifootpredictor.com/api/v1/matches", { headers: { "X-API-Key"
     // display data, and always display attribution.html on the page
   });
 ```
+
+📄 [OpenAPI spec](https://aifootpredictor.com/openapi.json) · 📮 [Postman collection](postman/aifp-free-api.postman_collection.json)
 
 Errors come back as JSON with `error` and `message`: `401 invalid_key`, `403 link_missing`, `403 wrong_origin`, `429 daily_limit`. Headers `X-RateLimit-Limit` and `X-RateLimit-Remaining` are sent on every call.
 
