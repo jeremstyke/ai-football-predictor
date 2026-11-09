@@ -152,7 +152,7 @@ Pour les gros matchs, notre IA écrit un **avant-match** à partir de nos seules
 
 > **La seule règle :** un lien visible vers aifootpredictor.com sur chaque page qui affiche nos données. Vous avez 3 jours pour l'ajouter, ensuite la clé est bloquée tant que le lien n'est pas trouvé. Vérification une fois par jour.
 
-Adresse de base : `https://afp-blog-production.up.railway.app/api/v1` (en-tête `X-API-Key`)
+Adresse de base : `https://api.aifootpredictor.com/api/v1` (en-tête `X-API-Key`)
 
 | Endpoint | Contenu |
 |---|---|
@@ -161,7 +161,7 @@ Adresse de base : `https://afp-blog-production.up.railway.app/api/v1` (en-tête 
 | `GET /reliability` | Score de Brier et log loss sur tous les matchs terminés, comparés au marché et au hasard |
 
 ```bash
-curl -H "X-API-Key: VOTRE_CLE" "https://afp-blog-production.up.railway.app/api/v1/matches?status=upcoming"
+curl -H "X-API-Key: VOTRE_CLE" "https://api.aifootpredictor.com/api/v1/matches?status=upcoming"
 ```
 
 Chaque réponse contient un bloc `attribution` avec le lien prêt à afficher.
