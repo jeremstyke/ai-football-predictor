@@ -157,6 +157,7 @@ Adresse de base : `https://api.aifootpredictor.com/api/v1` (en-tête `X-API-Key`
 | Endpoint | Contenu |
 |---|---|
 | `GET /matches` | Les matchs d'un jour : probabilités 1 / N / 2, issue la plus probable, plus de 2,5 buts, score le plus probable, buts attendus, résultat une fois fini. Paramètres : `date`, `competition`, `status` |
+| `GET /articles` | Nos articles avant-match écrits par l'IA (FR ou EN) : titre, chapeau et premier paragraphe, avec le lien « Lire l'analyse complète » à afficher dessous. Paramètres : `lang`, `date`, `limit` |
 | `GET /competitions` | Les codes des compétitions couvertes |
 | `GET /reliability` | Score de Brier et log loss sur tous les matchs terminés, comparés au marché et au hasard |
 
