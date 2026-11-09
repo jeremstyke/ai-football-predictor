@@ -12,7 +12,7 @@
 <!-- 7 nov 2026 (Jeremy): "le site doit être comme la mini app, avec toutes les données": the site shows the app itself (web version), same data -->
 <script defer src="/a.js"></script><script defer src="/account.js"></script><style>/* 9 nov 2026 (Jeremy, "ça dépasse"): mobile header fits the screen: no duplicate "open" button (it is in the hero), Premium link shown */
 @media (max-width:640px){.lh nav .bt.s{display:none!important}.lh nav a.h[href*="premium"]{display:inline-flex!important;white-space:nowrap}.lh .br span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}.lh nav{gap:10px;flex-wrap:nowrap}}</style>
-</head><body>
+<script>/* 9 nov 2026 (Jeremy): French browsers land on the French page; a click on FR/EN is remembered */(function(){try{var s=localStorage.getItem("afp_lang"),b=((navigator.languages&&navigator.languages[0])||navigator.language||"").toLowerCase(),h=document.documentElement.lang;if(h==="en"&&s!=="en"&&(s==="fr"||b.indexOf("fr")===0)&&!/bot|crawl|spider|slurp|lighthouse/i.test(navigator.userAgent)){var l=document.querySelector('link[rel="alternate"][hreflang="fr"]');if(l&&l.href&&l.href!==location.href){location.replace(l.href+location.search+location.hash);return}}}catch(e){}document.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem("afp_lang",a.getAttribute("hreflang"))}catch(x){}})})()</script></head><body>
 <iframe id="app" title="AI Football Predictor" allow="clipboard-write; web-share"></iframe>
 
 <div class="lp">
