@@ -1033,6 +1033,21 @@ export async function run(mode: string) {
   // 8 nov 2026 (Jeremy): "fais un article sur le blog avec les nouveautés à chaque fois et c'est cet article que tu partages"
   if (mode === "weekly") { await loadCss(); await weekly(addDays(weekStart(parisDay()), -7)); await indexes(); console.log("blog run done weekly"); return; }
   if (mode === "guides") { await loadCss(); await rerenderGuides(); await indexes(); console.log("blog run done guides"); return; }
+  if (mode === "announce3") {
+    // 9 nov 2026 09:00 (Jeremy, "oui demain matin vers 9h"): "Beat the model" update announcement, approved texts, links to the blog article. Sent once.
+    if ((await sb(`afp_tdata?key=eq.announce3:2026-11-09&select=key`))?.length) { console.log("announce3 already done"); return; }
+    const art = `${SITE}blog/beat-the-model-results-stats-weekly-challenge/`;
+    const chat = (await sb("afp_config?key=eq.channel_id&select=value"))?.[0]?.value || "@aifootballpredictorchannel";
+    const text = "📊 <b>Beat the model just got better</b>\n\n• Your result every day: your score, the model's score, and the matches where you beat it\n• Your stats by competition: where you beat the AI, and where it beats you\n• A weekly challenge: the leaderboard resets every Monday, top 3 announced\n• Sign in with Google on the website, with notifications in the web app\n\nFree, just for fun. Read what's new 👇";
+    const r = await fetch(`https://api.telegram.org/bot${Bun.env.TELEGRAM_BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chat, text, parse_mode: "HTML", link_preview_options: { is_disabled: true }, reply_markup: { inline_keyboard: [[{ text: "📝 Read the article", url: art + "?src=channel" }]] } }) });
+    const tj: any = await r.json().catch(() => null);
+    console.log("announce3 telegram", tj?.ok, tj?.description || "", tj?.result?.message_id);
+    let uri = null; const s = await bskyLogin();
+    if (s) uri = await bskyPost(s, { text: "Beat the model got a big update ⚽🤖\nYour daily result vs our AI, your stats by competition, and a weekly challenge that resets every Monday. Free, in Telegram and on the web.", url: art + "?src=bsky", title: "Beat the model: daily results, your stats and a weekly challenge", desc: "Your daily result against the model, your stats by competition, a weekly challenge and notifications on Telegram and the web app.", img: `${SITE}icon-512.png` });
+    console.log("announce3 bsky", uri);
+    await sb("afp_tdata?on_conflict=key", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ key: "announce3:2026-11-09", data: { tg: tj?.ok || false, tg_err: tj?.description || null, msg: tj?.result?.message_id || null, bsky: uri }, updated_at: new Date().toISOString() }) });
+    return;
+  }
   if (mode === "announce2") {
     // 8 nov 2026 (Jeremy "oui vas-y"): Europa League + Conference League announcement, approved texts, links to the blog article
     if ((await sb(`afp_tdata?key=eq.announce2:2026-11-08&select=key`))?.length) { console.log("announce2 already done"); return; }
