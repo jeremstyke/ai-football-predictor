@@ -139,7 +139,7 @@ Pour les gros matchs, notre IA écrit un **avant-match** à partir de nos seules
 <a id="free-api"></a>
 ## API foot gratuite
 
-**Gratuite, 5 000 requêtes par jour.** Nos probabilités de victoire, de nul et de défaite, les buts attendus et le score le plus probable sur 29 compétitions, en JSON, pour votre site, votre appli ou votre bot. Uniquement nos propres calculs : pas de cotes, pas de logos, pas de données brutes de fournisseurs.
+**Gratuite, 5 000 requêtes par jour.** Nos probabilités de victoire, de nul et de défaite, les buts attendus et le score le plus probable sur 45 compétitions, en JSON, pour votre site, votre appli ou votre bot. Uniquement nos propres calculs : pas de cotes, pas de logos, pas de données brutes de fournisseurs.
 
 **Obtenir une clé en 2 minutes**
 
