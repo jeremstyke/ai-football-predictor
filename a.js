@@ -2,6 +2,8 @@
 (function () {
   try {
     if (navigator.webdriver || /bot|crawl|spider|headless/i.test(navigator.userAgent)) return;
+    /* 10 nov 2026 (Jeremy): the owner's devices are not counted. Open any page once with ?nostat=1 on a device to stop counting it (?nostat=0 to count it again) */
+    try { var q0 = new URLSearchParams(location.search).get("nostat"); if (q0 === "1") localStorage.setItem("afp_nostat", "1"); if (q0 === "0") localStorage.removeItem("afp_nostat"); if (localStorage.getItem("afp_nostat") === "1") return; } catch (e) {}
     var E = "https://afp-blog-production.up.railway.app/api/hit", t0 = Date.now(), mx = 0, sent = 0;
     var id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-6), q = new URLSearchParams(location.search);
     function s(o) { o.id = id; var b = JSON.stringify(o); try { if (!navigator.sendBeacon || !navigator.sendBeacon(E, b)) fetch(E, { method: "POST", body: b, keepalive: true, mode: "no-cors" }); } catch (e) {} }
