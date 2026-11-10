@@ -39,7 +39,10 @@
 /* 8 nov 2026 (Jeremy): the home page is a real, readable page; the app opens full screen with "Open the app", from the installed web app, or with ?app=1 / ?tab= links */
 (function(){var q=new URLSearchParams(location.search),t=q.get("tab"),u=q.get("utm_source"),f=document.getElementById("app"),L="fr";
 var sa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
-function src(tb){return "https://afp-app-production.up.railway.app/?lang="+L+"&src="+(sa||q.get("src")=="pwa"?"pwa":"site")+(tb?"&tab="+encodeURIComponent(tb):"")+(u?"&utm="+encodeURIComponent(u):"")+"&v="+Date.now()}
+/* 10 nov 2026 (Jeremy): visitor id kept here (first party) and passed to the app iframe, whose own storage does not last; ?nostat=1 devices are passed on too */
+function vid(){try{var v=localStorage.getItem("afp_vid");if(!v){v=Array.from(crypto.getRandomValues(new Uint8Array(8)),function(b){return b.toString(16).padStart(2,"0")}).join("");localStorage.setItem("afp_vid",v)}return v}catch(e){return ""}}
+function ns(){try{return localStorage.getItem("afp_nostat")==="1"}catch(e){return false}}
+function src(tb){return "https://afp-app-production.up.railway.app/?lang="+L+"&src="+(sa||q.get("src")=="pwa"?"pwa":"site")+(tb?"&tab="+encodeURIComponent(tb):"")+(u?"&utm="+encodeURIComponent(u):"")+"&vid="+vid()+(ns()?"&nostat=1":"")+"&v="+Date.now()}
 window.afpOpen=function(push,tb){tb=tb||t;if(document.body.classList.contains("app"))return;document.body.classList.add("app");if(!f.getAttribute("src"))f.src=src(tb);if(push)try{history.pushState({app:1},"","?app=1"+(tb?"&tab="+encodeURIComponent(tb):""))}catch(e){}};
 addEventListener("popstate",function(){if(!sa&&!new URLSearchParams(location.search).get("app"))document.body.classList.remove("app")});
 if(sa||t||q.get("app")||q.get("src")=="pwa")afpOpen(false);
