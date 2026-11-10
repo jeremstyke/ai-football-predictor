@@ -6,7 +6,7 @@
   var CID = "377977599477-rt1evcbjtjovl4meur2skhrjmpc27lmb.apps.googleusercontent.com";
   var APP = "https://afp-app-production.up.railway.app";
   var FR = (document.documentElement.lang || "").slice(0, 2) === "fr" || location.pathname.indexOf("/fr/") === 0;
-  var T = FR ? { in: "Se connecter", out: "Se déconnecter", title: "Ton compte AI Football Predictor", why: "Garde tes widgets, ton club et tes équipes favorites, les matchs et championnats que tu suis, sur tous tes appareils.", hi: "Connecté", err: "La connexion n'a pas marché. Réessaie.", del: "Supprimer mon compte", delq: "Supprimer ton compte et tout ce qui est sauvegardé ? C'est définitif.", priv: "Confidentialité", close: "Fermer", link: "Lier mon compte Telegram", tgok: "Compte Telegram lié : jeu, Premium et favoris communs" }
+  var T = FR ? { in: "Se connecter", out: "Se déconnecter", title: "Votre compte AI Football Predictor", why: "Gardez vos widgets, votre club et vos équipes favorites, les matchs et championnats que vous suivez, sur tous vos appareils.", hi: "Connecté", err: "La connexion n'a pas marché. Réessayez.", del: "Supprimer mon compte", delq: "Supprimer votre compte et tout ce qui est sauvegardé ? C'est définitif.", priv: "Confidentialité", close: "Fermer", link: "Lier mon compte Telegram", tgok: "Compte Telegram lié : jeu, Premium et favoris communs" }
                : { in: "Sign in", out: "Sign out", title: "Your AI Football Predictor account", why: "Keep your widgets, your club and favourite teams, the matches and leagues you follow, on all your devices.", hi: "Signed in", err: "Sign-in did not work. Please try again.", del: "Delete my account", delq: "Delete your account and everything saved? This cannot be undone.", priv: "Privacy", close: "Close", link: "Link my Telegram account", tgok: "Telegram account linked: game, Premium and favourites shared" };
   function rd(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
   function wr(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -106,7 +106,7 @@
     set: function (k, v) { D[k] = v; wr("aifp_acct_data", D); if (S) { var it = {}; it[k] = v; return call("data", { items: it }); } return Promise.resolve({ ok: false, local: true }); }
   };
   // 8 nov 2026 (Jeremy, "garder ses widgets déjà créés"): save the widget being configured, list them in the account window
-  var WT = FR ? { save: "💾 Garder ce widget", saved: "Gardé dans ton compte ✓", mine: "Mes widgets", none: "Aucun widget gardé pour l'instant : configure un widget puis touche « Garder ce widget ».", copy: "Copier", copied: "Copié ✓", rm: "Retirer" }
+  var WT = FR ? { save: "💾 Garder ce widget", saved: "Gardé dans votre compte ✓", mine: "Mes widgets", none: "Aucun widget gardé pour l'instant : configurez un widget puis touchez « Garder ce widget ».", copy: "Copier", copied: "Copié ✓", rm: "Retirer" }
               : { save: "💾 Keep this widget", saved: "Kept in your account ✓", mine: "My widgets", none: "No widget kept yet: set up a widget, then tap « Keep this widget ».", copy: "Copy", copied: "Copied ✓", rm: "Remove" };
   var WN = { match: "Match", team: FR ? "Équipe" : "Team", table: FR ? "Classement" : "Table", live: "Live", articles: FR ? "Articles" : "Articles", badge: "Badge" };
   function wl() { var a = D.afp_widgets; return Array.isArray(a) ? a : []; }
