@@ -48,6 +48,45 @@ async function ours(filter: string) {
 async function team(n: number, side: string) {
   const f = await fx(n); if (!f) return { ok: false };
   const tid = side === "a" ? f.aid : f.hid, name = side === "a" ? f.away : f.home;
+  return teamCore(tid, f.lg, f.ss, name, n);
+}
+// 10 nov 2026 (Jeremy "pour la recherche, tous devraient apparaître"): every club and competition we cover, also without a match of ours.
+// Index built once a day from API-Football (current season of each LID competition), our team names matched through af_id.
+// teams: [api team id, API name, our name or null, competition code, our latest prediction n or null, side h/a]
+let SIDX_RUN: Promise<any> | null = null;
+async function sindexBuild() {
+  const comps: any[] = [], teams: Record<string, any[]> = {};
+  for (const [afS, div] of Object.entries(LID)) {
+    try {
+      const afId = Number(afS);
+      const lg = (await af(`leagues?id=${afId}&current=true`))?.[0]; const ss = lg?.seasons?.[0]?.year; if (!ss) continue;
+      comps.push({ c: div, af: afId, ss, nm: lg.league?.name, logo: lg.league?.logo, country: lg.country?.name });
+      const fxs = (await af(`fixtures?league=${afId}&season=${ss}`)) || [];
+      const ours = (await sb(`afp_predictions?league=eq.${div}&af_id=not.is.null&select=n,af_id,home,away&order=kickoff.desc&limit=2000`)) || [];
+      const byAf = new Map<number, any>(ours.map((p: any) => [p.af_id, p]));
+      for (const x of fxs) {
+        const p = byAf.get(x.fixture?.id);
+        for (const [side, t] of [["h", x.teams?.home], ["a", x.teams?.away]] as [string, any][]) {
+          if (!t?.id) continue;
+          const e = teams[String(t.id)] ||= [t.id, t.name, null, div, null, null];
+          if (p && e[2] == null && e[3] === div) { e[2] = side === "h" ? p.home : p.away; e[4] = p.n; e[5] = side; }
+        }
+      }
+    } catch (e) { console.log("sindex error", afS, String(e)); }
+  }
+  const data = { at: new Date().toISOString(), comps, teams: Object.values(teams) };
+  if (comps.length) await sb("afp_tdata?on_conflict=key", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ key: "sindex:v1", data, updated_at: new Date().toISOString() }) });
+  console.log("sindex built", comps.length, "comps", data.teams.length, "teams");
+  return data;
+}
+async function sindex(wait = false) {
+  const row = (await sb(`afp_tdata?key=eq.sindex:v1&select=data,updated_at`))?.[0];
+  if (!(row && Date.now() - Date.parse(row.updated_at) < 24 * 3600000) && !SIDX_RUN) SIDX_RUN = sindexBuild().finally(() => { SIDX_RUN = null; });
+  if (!row && wait && SIDX_RUN) return await SIDX_RUN;
+  return row?.data || { comps: [], teams: [] };
+}
+async function teamCore(tid: number, lg: number, ss: number, name: string, n: number | null) {
+  const f = { lg, ss };
   const d = await cached(`team:${tid}:${f.lg}:${f.ss}`, 6 * 3600000, async () => {
     const [s, last, next, st] = await Promise.all([af(`teams/statistics?league=${f.lg}&season=${f.ss}&team=${tid}`), af(`fixtures?team=${tid}&last=6`), af(`fixtures?team=${tid}&next=4`), af(`standings?league=${f.lg}&season=${f.ss}`)]);
     if (!s) return null;
@@ -68,7 +107,7 @@ async function team(n: number, side: string) {
   const o = await ours(`or=(home.eq.${encodeURIComponent(name)},away.eq.${encodeURIComponent(name)})`);
   // 8 nov 2026: the team's scorers and assist makers from the competition sheet (players open from everywhere)
   let sc: any[] = [], as: any[] = [];
-  try { const L: any = await league(n); if (L?.ok) { sc = (L.scorers || []).filter((x: any) => x.tid === tid); as = (L.assists || []).filter((x: any) => x.tid === tid); } } catch {}
+  if (n) try { const L: any = await league(n); if (L?.ok) { sc = (L.scorers || []).filter((x: any) => x.tid === tid); as = (L.assists || []).filter((x: any) => x.tid === tid); } } catch {}
   return { ok: true, ...d, ours: o, our_name: name, sc, as };
 }
 // ---------- player sheet (8 nov 2026, Jeremy: "des fiches joueurs"): season stats + our probability that he scores in his team's next match.
@@ -107,7 +146,7 @@ async function player(n: number, pid: number) {
 }
 // player sheet from a goal in a match (8 nov 2026, Jeremy: tap a scorer in a match): find the player id in the fixture events, then player()
 // 8 nov 2026 (Jeremy): competitions open from a player sheet; full match events (goals, cards, substitutions) with player ids
-const LID: Record<number, string> = { 39: "E0", 61: "F1", 140: "SP1", 135: "I1", 78: "D1", 94: "P1", 88: "N1", 179: "SC0", 144: "B1", 203: "T1", 197: "G1", 283: "ROU", 103: "NOR", 71: "BRA", 128: "ARG", 2: "CL", 3: "EL", 848: "ECL", 210: "HR", 286: "RS", 333: "UA", 307: "SA", 318: "CY", 172: "BG", 45: "FAC", 48: "EFL", 81: "DFB", 143: "CDR", 181: "SCC", 185: "SLC", 96: "TDP" };
+const LID: Record<number, string> = { 39: "E0", 61: "F1", 140: "SP1", 135: "I1", 78: "D1", 94: "P1", 88: "N1", 179: "SC0", 144: "B1", 203: "T1", 197: "G1", 283: "ROU", 103: "NOR", 71: "BRA", 128: "ARG", 2: "CL", 3: "EL", 848: "ECL", 210: "HR", 286: "RS", 333: "UA", 307: "SA", 318: "CY", 172: "BG", 45: "FAC", 48: "EFL", 81: "DFB", 143: "CDR", 181: "SCC", 185: "SLC", 96: "TDP", 525: "UWCL", 44: "WSL", 64: "FD1W", 142: "LIGAF", 82: "FBLW", 139: "SAW", 254: "NWSL" };
 async function lgN(lgid: number) { const c = LID[lgid]; if (!c) return null; return (await sb(`afp_predictions?league=eq.${c}&af_id=not.is.null&order=kickoff.desc&limit=1&select=n`))?.[0]?.n ?? null; }
 async function events(n: number) {
   const p = (await sb(`afp_predictions?n=eq.${n}&select=af_id,kickoff`))?.[0]; if (!p?.af_id) return { ok: false };
@@ -126,6 +165,9 @@ async function pfind(n: number, name: string) {
 }
 async function league(n: number) {
   const f = await fx(n); if (!f) return { ok: false };
+  return leagueCore(f);
+}
+async function leagueCore(f: any) {
   const d = await cached(`league2:${f.lg}:${f.ss}`, 6 * 3600000, async () => {
     const [st, sc, as, nx] = await Promise.all([af(`standings?league=${f.lg}&season=${f.ss}`), af(`players/topscorers?league=${f.lg}&season=${f.ss}`), af(`players/topassists?league=${f.lg}&season=${f.ss}`), af(`fixtures?league=${f.lg}&season=${f.ss}&next=8`)]);
     const pl = (x: any) => ({ id: x.player?.id, tid: x.statistics?.[0]?.team?.id, n: x.player?.name, ph: x.player?.photo, t: x.statistics?.[0]?.team?.name, tl: x.statistics?.[0]?.team?.logo, g: x.statistics?.[0]?.goals?.total ?? 0, as: x.statistics?.[0]?.goals?.assists ?? 0, ap: x.statistics?.[0]?.games?.appearences ?? null });
@@ -253,16 +295,77 @@ async function acctRoutes(req: Request, u: URL) {
       await sb("afp_sessions", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ token, uid: a.uid, ua: (req.headers.get("user-agent") || "").slice(0, 200) }) });
       return acctOut({ ok: true, token, isNew, user: { name: prof.name, email: prof.email, picture: prof.picture }, data: await acctData(a.uid) });
     }
+    // 9 nov 2026 (Jeremy, "ajoute la connexion GitHub"): sign in with GitHub (popup). GitHub OAuth App: afp_config gh_oauth_id + gh_oauth_secret,
+    // callback https://api.aifootpredictor.com/api/acct/github/cb. Same account as Google when the verified e-mail is the same.
+    if (u.pathname === "/api/acct/github/start" || u.pathname === "/api/acct/github/cb") {
+      const cf: any = {}; for (const r of ((await sb("afp_config?key=in.(gh_oauth_id,gh_oauth_secret)&select=key,value")) || [])) cf[r.key] = r.value;
+      const page = (msg: any) => new Response(`<!DOCTYPE html><meta charset="utf-8"><title>AI Football Predictor</title><body style="background:#06090e;color:#e6edf6;font-family:sans-serif;text-align:center;padding:40px">${msg.ok ? "✅" : "⚠️"} ${msg.ok ? "Connected, you can close this window." : "Sign-in did not work. Close this window and try again."}<script>try{opener&&opener.postMessage({afpGh:${JSON.stringify(msg).replace(/</g, "\\u003c")}},"https://aifootpredictor.com");}catch(e){}setTimeout(function(){window.close()},${msg.ok ? 300 : 4000});</script>`, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+      if (!cf.gh_oauth_id || !cf.gh_oauth_secret) return page({ ok: false, error: "config" });
+      const sign = (s: string) => createHmac("sha256", cf.gh_oauth_secret).update(s).digest("hex").slice(0, 24);
+      if (u.pathname === "/api/acct/github/start") {
+        const st = `${randomBytes(8).toString("hex")}.${Date.now()}.${u.searchParams.get("lang") === "fr" ? "fr" : "en"}`;
+        const to = `https://github.com/login/oauth/authorize?client_id=${encodeURIComponent(cf.gh_oauth_id)}&redirect_uri=${encodeURIComponent("https://api.aifootpredictor.com/api/acct/github/cb")}&scope=${encodeURIComponent("read:user user:email")}&state=${encodeURIComponent(st + "." + sign(st))}&allow_signup=true`;
+        return new Response(null, { status: 302, headers: { Location: to, "Cache-Control": "no-store" } });
+      }
+      const sp = (u.searchParams.get("state") || "").split("."), st = sp.slice(0, 3).join(".");
+      if (sp.length !== 4 || sign(st) !== sp[3] || Date.now() - Number(sp[1]) > 15 * 60000) return page({ ok: false, error: "state" });
+      const code = u.searchParams.get("code"); if (!code) return page({ ok: false, error: "code" });
+      const tk: any = await (await fetch("https://github.com/login/oauth/access_token", { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ client_id: cf.gh_oauth_id, client_secret: cf.gh_oauth_secret, code }) })).json().catch(() => null);
+      if (!tk?.access_token) return page({ ok: false, error: "token" });
+      const H = { Authorization: `Bearer ${tk.access_token}`, "User-Agent": "aifootpredictor", Accept: "application/vnd.github+json" };
+      const gu: any = await (await fetch("https://api.github.com/user", { headers: H })).json().catch(() => null);
+      if (!gu?.id) return page({ ok: false, error: "user" });
+      const ems: any[] = (await (await fetch("https://api.github.com/user/emails", { headers: H })).json().catch(() => [])) || [];
+      const em = (Array.isArray(ems) ? (ems.find(e => e.primary && e.verified) || ems.find(e => e.verified)) : null)?.email?.toLowerCase() || null;
+      const prof: any = { name: gu.name || gu.login || null, picture: gu.avatar_url || null, last_login: new Date().toISOString() };
+      let a = (await sb(`afp_accounts?github_id=eq.${Number(gu.id)}&select=uid,email`))?.[0], isNew = false;
+      if (!a && em) { a = (await sb(`afp_accounts?email=eq.${encodeURIComponent(em)}&select=uid,email`))?.[0]; if (a) await sb(`afp_accounts?uid=eq.${a.uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ github_id: Number(gu.id) }) }); }
+      if (a) await sb(`afp_accounts?uid=eq.${a.uid}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(a.email ? { last_login: prof.last_login } : { ...prof, email: em }) });
+      else {
+        a = (await sb("afp_accounts", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ github_id: Number(gu.id), email: em, lang: sp[2], ...prof }) }))?.[0];
+        isNew = true;
+        if (a && TOKEN) await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: 7057960224, text: `🆕 AI Football Predictor - nouveau compte sur le site (GitHub)\n${prof.name || ""}\nLangue : ${sp[2]}` }) }).catch(() => {});
+      }
+      if (!a?.uid) return page({ ok: false, error: "server" });
+      const full = (await sb(`afp_accounts?uid=eq.${a.uid}&select=name,email,picture`))?.[0] || {};
+      const token = randomBytes(32).toString("hex");
+      await sb("afp_sessions", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ token, uid: a.uid, ua: (req.headers.get("user-agent") || "").slice(0, 200) }) });
+      return page({ ok: true, token, isNew, user: { name: full.name, email: full.email, picture: full.picture } });
+    }
     const me = await acctUser(req);
     if (!me) return acctOut({ ok: false, error: "auth" }, 401);
     if (u.pathname.startsWith("/api/acct/apikey")) return v1KeyRoutes(req, u, me.uid);
     if (u.pathname === "/api/acct/wstyle") return wstyleRoute(req, me.uid);
+    if (u.pathname === "/api/acct/space") {
+      // 9 nov 2026 (Jeremy, "sur le site il n'y a pas comme sur la mini app le résumé du jour"): "Mon espace" for website Premium accounts
+      // 9 nov 2026 (Jeremy, "le mieux selon toi"): Mon espace is free for everyone now (Premium keeps the bot alerts)
+      let teams: string[] = [];
+      try { const t = JSON.parse(u.searchParams.get("t") || "null"); if (Array.isArray(t)) teams = t; } catch {}
+      teams = [...new Set(teams.filter((x: any) => typeof x === "string").map((x: string) => x.trim().slice(0, 60)).filter(Boolean))].slice(0, 40);
+      if (!teams.length) return acctOut({ ok: true, prem: true, teams: [], upcoming: [], past: [] });
+      const lst = teams.map(x => `"${x.replace(/["\\]/g, "")}"`).join(","), f = encodeURIComponent(`(home.in.(${lst}),away.in.(${lst}))`);
+      const S = "n,league,home,away,kickoff,ph,pd,pa,score,status,hg,ag";
+      const [up, past] = await Promise.all([
+        sb(`afp_predictions?or=${f}&kickoff=gt.${new Date().toISOString()}&ph=not.is.null&order=kickoff.asc&limit=10&select=${S}`),
+        sb(`afp_predictions?or=${f}&status=in.(won,lost)&hg=not.is.null&order=kickoff.desc&limit=10&select=${S}`),
+      ]);
+      return acctOut({ ok: true, prem: true, teams, upcoming: up || [], past: past || [] });
+    }
+    if (u.pathname === "/api/acct/premsub") return premSub(req, null, me.uid, acctOut);
+    if (u.pathname === "/api/acct/buy") {
+      // 9 nov 2026 (Jeremy, "pas obligé d'avoir le même mail"): Gumroad link carrying the account id (sent back in the Ping as url_params[aid])
+      const g = (await sb("afp_config?key=eq.gumroad_url&select=value"))?.[0]?.value || "";
+      return acctOut({ ok: !!g, url: g ? `${g}${g.includes("?") ? "&" : "?"}aid=${me.uid}` : null });
+    }
     if (u.pathname === "/api/acct/me") {
       const a = (await sb(`afp_accounts?uid=eq.${me.uid}&select=name,email,picture,lang,tg_id`))?.[0] || {};
       // 8 nov 2026 (Jeremy): player id for "Défie le modèle" (Telegram id once linked) and Premium of the linked Telegram account
       const gid = await sb("rpc/afp_acct_gid", { method: "POST", body: JSON.stringify({ p_uid: me.uid }) });
       let prem = null;
-      if (a.tg_id) { const t = (await sb(`afp_users?tg_id=eq.${a.tg_id}&select=premium_until`))?.[0]; if (t?.premium_until && Date.parse(t.premium_until) > Date.now()) prem = t.premium_until; }
+      // 9 nov 2026 (Jeremy, "Prépare le premium sur le site"): Premium bought on the website (Gumroad, same e-mail as the Google account)
+      const wp = await sb("rpc/afp_web_prem_apply", { method: "POST", body: JSON.stringify({ p_uid: me.uid }) });
+      if (typeof wp === "string" && Date.parse(wp) > Date.now()) prem = wp;
+      if (a.tg_id) { const t = (await sb(`afp_users?tg_id=eq.${a.tg_id}&select=premium_until`))?.[0]; if (t?.premium_until && Date.parse(t.premium_until) > Date.now() && (!prem || Date.parse(t.premium_until) > Date.parse(prem))) prem = t.premium_until; }
       return acctOut({ ok: true, user: { name: a.name, email: a.email, picture: a.picture, lang: a.lang }, tg: !!a.tg_id, gid: typeof gid === "number" ? gid : null, prem, data: await acctData(me.uid) });
     }
     if (u.pathname === "/api/acct/linkcode" && req.method === "POST") {
@@ -380,7 +483,18 @@ async function wstyleCore(req: Request, o: Own, reply: (d: any, s?: number) => R
   if (req.method !== "POST") return reply({ ok: true, prem: true, style: cur });
   const b: any = await req.json().catch(() => ({}));
   const col = (x: any) => (/^#[0-9a-f]{6}$/i.test(String(x || "")) ? String(x).toLowerCase() : null);
-  const logo: string | null = String(b.logo || "").trim().slice(0, 300) || null;
+  let logo: string | null = String(b.logo || "").trim().slice(0, 300) || null;
+  // 9 nov 2026 (Jeremy, "on devrait pouvoir uploader son logo"): an uploaded image (data URL, resized in the browser) goes to the public bucket afp-logos
+  const dm = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+\/=]+)$/.exec(String(b.logoData || ""));
+  if (b.logoData && !dm) return reply({ ok: false, error: "logo_type" }, 400);
+  if (dm) {
+    const bin = Uint8Array.from(atob(dm[2]), c => c.charCodeAt(0));
+    if (bin.length > 400000) return reply({ ok: false, error: "logo_size" }, 400);
+    const ext = dm[1] === "image/png" ? "png" : dm[1] === "image/webp" ? "webp" : "jpg", name = `${crypto.randomUUID()}.${ext}`;
+    const up = await fetch(`${SB_URL}/storage/v1/object/afp-logos/${name}`, { method: "POST", headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": dm[1], "Cache-Control": "max-age=31536000" }, body: bin });
+    if (!up.ok) { console.log("logo upload error", up.status, (await up.text()).slice(0, 200)); return reply({ ok: false, error: "logo_upload" }, 500); }
+    logo = `${SB_URL}/storage/v1/object/public/afp-logos/${name}`;
+  }
   if (logo && !/^https:\/\/[^\s"'()<>\\]+$/i.test(logo)) return reply({ ok: false, error: "logo" }, 400);
   const row = { bg: col(b.bg), txt: col(b.txt), acc: col(b.acc), logo, updated_at: new Date().toISOString() };
   const r = cur ? (await sb(`afp_widget_style?token=eq.${cur.token}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(row) }))?.[0]
@@ -397,18 +511,38 @@ async function tgRoutes(req: Request, u: URL) {
   const o = await ownTg(Number(tu.id), tu.first_name || "");
   if (u.pathname.startsWith("/api/tg/apikey")) return v1KeyCore(req, u.pathname.replace("/api/tg/apikey", ""), o, out);
   if (u.pathname === "/api/tg/wstyle") return wstyleCore(req, o, out);
+  if (u.pathname === "/api/tg/premsub") return premSub(req, Number(tu.id), null, out);
   // 9 nov 2026 (Jeremy): Premium morning summary + favourite clubs alerts (sent by SQL afp_prem_digest / afp_prem_clubs): favourites and switches
+  // 9 nov 2026 (Jeremy, "un truc dans l'appli"): Premium "⭐ Mon espace": upcoming matches and recent results of the user's favourite clubs
+  if (u.pathname === "/api/tg/space") {
+    const id = Number(tu.id);
+    // 9 nov 2026: Mon espace free for everyone
+    let teams: string[] = [];
+    try { const t = JSON.parse(u.searchParams.get("t") || "null"); if (Array.isArray(t)) teams = t; } catch {}
+    if (!teams.length) teams = (await sb(`afp_users?tg_id=eq.${id}&select=fav_teams`))?.[0]?.fav_teams || [];
+    teams = [...new Set(teams.filter((x: any) => typeof x === "string").map((x: string) => x.trim().slice(0, 60)).filter(Boolean))].slice(0, 40);
+    if (!teams.length) return out({ ok: true, prem: true, teams: [], upcoming: [], past: [] });
+    const lst = teams.map(x => `"${x.replace(/["\\]/g, "")}"`).join(","), f = encodeURIComponent(`(home.in.(${lst}),away.in.(${lst}))`);
+    const S = "n,league,home,away,kickoff,ph,pd,pa,score,status,hg,ag";
+    const [up, past] = await Promise.all([
+      sb(`afp_predictions?or=${f}&kickoff=gt.${new Date().toISOString()}&ph=not.is.null&order=kickoff.asc&limit=10&select=${S}`),
+      sb(`afp_predictions?or=${f}&status=in.(won,lost)&hg=not.is.null&order=kickoff.desc&limit=10&select=${S}`),
+    ]);
+    return out({ ok: true, prem: true, teams, upcoming: up || [], past: past || [] });
+  }
   if (u.pathname === "/api/tg/prem") {
     const id = Number(tu.id);
     if (req.method === "POST") {
       const b: any = await req.json().catch(() => ({})), patch: any = {};
       if (Array.isArray(b.fav)) patch.fav_teams = [...new Set(b.fav.filter((x: any) => typeof x === "string").map((x: string) => x.trim().slice(0, 60)).filter(Boolean))].slice(0, 40);
+      if (Array.isArray(b.mute)) patch.fav_mute = [...new Set(b.mute.filter((x: any) => typeof x === "string").map((x: string) => x.trim().slice(0, 60)).filter(Boolean))].slice(0, 40); // 10 nov 2026 (Jeremy): alerts on/off per favourite club
       if (typeof b.digest === "boolean") patch.digest_on = b.digest;
       if (typeof b.club === "boolean") patch.club_on = b.club;
+      if (typeof b.move === "boolean") patch.move_on = b.move;
       if (Object.keys(patch).length) await sb(`afp_users?tg_id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
     }
-    const r = (await sb(`afp_users?tg_id=eq.${id}&select=premium_until,digest_on,club_on,fav_teams`))?.[0] || {};
-    return out({ ok: true, prem: !!(r.premium_until && Date.parse(r.premium_until) > Date.now()), digest: r.digest_on !== false, club: r.club_on !== false, fav: r.fav_teams || [] });
+    const r = (await sb(`afp_users?tg_id=eq.${id}&select=premium_until,digest_on,club_on,move_on,fav_teams,fav_mute`))?.[0] || {};
+    return out({ ok: true, prem: !!(r.premium_until && Date.parse(r.premium_until) > Date.now()), digest: r.digest_on !== false, club: r.club_on !== false, move: r.move_on !== false, fav: r.fav_teams || [], mute: r.fav_mute || [] });
   }
   return out({ ok: false, error: "not found" }, 404);
 }
@@ -438,7 +572,7 @@ function v1Extra(m: any) {
   return { double_chance: dc, both_teams_score: r((1 - Math.exp(-xh)) * (1 - Math.exp(-xa))), clean_sheet: { home: r(Math.exp(-xa)), away: r(Math.exp(-xh)) }, top_scores: g.slice(0, 5).map(x => ({ score: x.score, probability: r(x.probability) })) };
 }
 const V1_TBL: Record<string, string> = { F1: "Ligue 1", E0: "Premier League", SP1: "LaLiga", I1: "Serie A", D1: "Bundesliga", P1: "Liga Portugal", N1: "Eredivisie", T1: "Süper Lig" };
-const V1_SEL = "id,n,league,kickoff,home,away,ph,pd,pa,o25,score,score_p,xg_h,xg_a,pick,pick_prob,status,hg,ag";
+const V1_SEL = "id,n,league,kickoff,home,away,ph,pd,pa,o25,score,score_p,xg_h,xg_a,pick,pick_prob,status,hg,ag,af_id,odds_h,odds_d,odds_a";
 function v1Match(m: any, dom: string) {
   const r2 = (x: any) => (x == null ? null : Math.round(Number(x) * 1000) / 1000);
   const oc: any = { H: "home", D: "draw", A: "away" };
@@ -456,6 +590,33 @@ function v1Match(m: any, dom: string) {
     url: `${V1_SITE}?tab=m${m.n}&utm_source=api&utm_medium=${encodeURIComponent(dom || "unknown")}`,
   };
 }
+// 9 nov 2026 (Jeremy): API Premium extras (Telegram Premium only): link optional, any origin, /history, /live, more markets + bookmaker odds
+function v1Prem(m: any, lv: any) {
+  const r = (x: number) => Math.round(x * 1000) / 1000, o: any = {};
+  if (m.xg_h != null && m.xg_a != null) {
+    const xh = Number(m.xg_h), xa = Number(m.xg_a), P: number[][] = [];
+    for (let i = 0; i <= 10; i++) { P[i] = []; for (let j = 0; j <= 10; j++) P[i][j] = v1Pois(i, xh) * v1Pois(j, xa); }
+    const tot = (f: (i: number, j: number) => boolean) => { let t = 0; for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) if (f(i, j)) t += P[i][j]; return r(t); };
+    o.over_under = Object.fromEntries([0.5, 1.5, 2.5, 3.5, 4.5].map(L => [String(L), { over: tot((i, j) => i + j > L), under: tot((i, j) => i + j < L) }]));
+    o.team_goals = { home: Object.fromEntries([0.5, 1.5, 2.5].map(L => ["over_" + L, tot(i => i > L)])), away: Object.fromEntries([0.5, 1.5, 2.5].map(L => ["over_" + L, tot((i, j) => j > L)])) };
+    const g: any[] = []; for (let i = 0; i <= 6; i++) for (let j = 0; j <= 6; j++) g.push({ score: `${i}-${j}`, probability: r(P[i][j]) });
+    o.exact_scores = g.sort((a, b) => b.probability - a.probability).slice(0, 20);
+    o.winning_margin = { home_by_2_plus: tot((i, j) => i - j >= 2), away_by_2_plus: tot((i, j) => j - i >= 2) };
+  }
+  if (m.odds_h && m.odds_d && m.odds_a) {
+    const ih = 1 / m.odds_h, id = 1 / m.odds_d, ia = 1 / m.odds_a, s = ih + id + ia;
+    o.odds = { home: Number(m.odds_h), draw: Number(m.odds_d), away: Number(m.odds_a) };
+    o.value = { home: r(Number(m.ph) - ih / s), draw: r(Number(m.pd) - id / s), away: r(Number(m.pa) - ia / s), explain: "Our probability minus the bookmaker's implied probability (margin removed). Positive = our model rates it higher than the market." };
+  }
+  if (lv) o.live = { status: lv.status, minute: lv.elapsed, score: { home: lv.hg, away: lv.ag }, updated_at: lv.updated_at };
+  return o;
+}
+async function v1Live(rows: any[]) {
+  const ids = rows.map(m => m.af_id).filter(Boolean);
+  if (!ids.length) return {} as Record<string, any>;
+  const l = (await sb(`afp_live?af_id=in.(${ids.join(",")})&select=af_id,status,elapsed,hg,ag,updated_at`)) || [];
+  return Object.fromEntries(l.map((x: any) => [String(x.af_id), x]));
+}
 async function v1(req: Request, u: URL) {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: V1_CORS });
   const p = u.pathname.replace(/\/+$/, "");
@@ -468,25 +629,45 @@ async function v1(req: Request, u: URL) {
   const rl = { "X-RateLimit-Limit": String(au.limit), "X-RateLimit-Remaining": String(au.left) };
   const dom = (await sb(`afp_api_keys?key=eq.${encodeURIComponent(key)}&select=domain`))?.[0]?.domain || "";
   const meta: any = { calls_left_today: au.left };
-  if (au.grace) meta.notice = "No link to aifootpredictor.com found on your site yet. Add it within 3 days of creating your key, or the key stops working.";
+  const PR = !!au.prem, A = PR ? { ...V1_ATTR, required: false, rule: "Optional with your key." } : V1_ATTR;
+  const pm = async (raw: any[]) => { const rows = raw.map((m: any) => v1Match(m, dom)); if (!PR) return rows; const lv = await v1Live(raw); return rows.map((x: any, i: number) => ({ ...x, premium: v1Prem(raw[i], lv[String(raw[i].af_id)]) })); };
+  if (au.grace && !PR) meta.notice = "No link to aifootpredictor.com found on your site yet. Add it within 3 days of creating your key, or the key stops working.";
   try {
     if (p === "/api/v1/matches") {
       const d = /^\d{4}-\d{2}-\d{2}$/.test(u.searchParams.get("date") || "") ? u.searchParams.get("date")! : new Date().toISOString().slice(0, 10);
       const next = new Date(Date.parse(d + "T00:00:00Z") + 864e5).toISOString().slice(0, 10);
+      const off = Math.round((Date.parse(d + "T00:00:00Z") - Date.parse(new Date().toISOString().slice(0, 10) + "T00:00:00Z")) / 864e5);
+      if (!PR && (off < -1 || off > 2)) return v1Out({ error: "date_out_of_range", message: "With this key, date can go from yesterday to 2 days ahead.", attribution: A }, 400, rl);
       const c = (u.searchParams.get("competition") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 12);
       const st = u.searchParams.get("status") || "all";
       let q = `afp_predictions?select=${V1_SEL}&kickoff=gte.${d}T00:00:00Z&kickoff=lt.${next}T00:00:00Z&order=kickoff.asc&limit=400`;
       if (c) q += `&league=eq.${c}`;
       if (st === "upcoming") q += "&status=eq.pending"; else if (st === "finished") q += "&status=in.(won,lost)";
-      const rows = ((await sb(q)) || []).map((m: any) => v1Match(m, dom));
-      return v1Out({ attribution: V1_ATTR, meta: { ...meta, date: d, count: rows.length }, data: rows }, 200, rl);
+      const rows = await pm((await sb(q)) || []);
+      return v1Out({ attribution: A, meta: { ...meta, date: d, count: rows.length }, data: rows }, 200, rl);
+    }
+    if (p === "/api/v1/live" || p === "/api/v1/history") {
+      if (!PR) return v1Out({ error: "not_available", message: "This endpoint is not available with your key.", attribution: A }, 403, rl);
+      if (p === "/api/v1/live") {
+        const now = Date.now(), q = `afp_predictions?select=${V1_SEL}&kickoff=gte.${new Date(now - 3 * 3600e3).toISOString()}&kickoff=lte.${new Date(now + 15 * 60e3).toISOString()}&order=kickoff.asc&limit=200`;
+        const rows = (await pm((await sb(q)) || [])).filter((x: any) => x.premium?.live && !["FT", "AET", "PEN", "NS", "PST", "CANC"].includes(x.premium.live.status));
+        return v1Out({ attribution: A, meta: { ...meta, count: rows.length }, data: rows }, 200, rl);
+      }
+      const ok = (x: string | null) => (/^\d{4}-\d{2}-\d{2}$/.test(x || "") ? x : null);
+      const to = ok(u.searchParams.get("to")) || new Date().toISOString().slice(0, 10), fr = ok(u.searchParams.get("from")) || new Date(Date.parse(to) - 30 * 864e5).toISOString().slice(0, 10);
+      const c = (u.searchParams.get("competition") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 12), tm = (u.searchParams.get("team") || "").replace(/[^\p{L}\p{N} .'-]/gu, "").slice(0, 60);
+      let q = `afp_predictions?select=${V1_SEL}&status=in.(won,lost)&kickoff=gte.${fr}T00:00:00Z&kickoff=lt.${new Date(Date.parse(to) + 864e5).toISOString().slice(0, 10)}T00:00:00Z&order=kickoff.desc&limit=1000`;
+      if (c) q += `&league=eq.${c}`;
+      if (tm) q += `&or=${encodeURIComponent(`(home.eq."${tm}",away.eq."${tm}")`)}`;
+      const raw = (await sb(q)) || [], rows = raw.map((m: any) => ({ ...v1Match(m, dom), premium: v1Prem(m, null) })), w = raw.filter((m: any) => m.status === "won").length;
+      return v1Out({ attribution: A, meta: { ...meta, from: fr, to, count: rows.length, most_likely_happened: w, hit_rate: rows.length ? Math.round(w / rows.length * 1000) / 1000 : null }, data: rows }, 200, rl);
     }
     if (p === "/api/v1/competitions") {
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const rows = (await sb(`afp_predictions?select=league&kickoff=gte.${since}&limit=5000`)) || [];
       const cnt: Record<string, number> = {}; for (const r of rows) cnt[r.league] = (cnt[r.league] || 0) + 1;
       const data = Object.entries(cnt).sort((a, b) => b[1] - a[1]).map(([code, n]) => ({ code, matches_last_30_days: n }));
-      return v1Out({ attribution: V1_ATTR, meta: { ...meta, count: data.length }, data }, 200, rl);
+      return v1Out({ attribution: A, meta: { ...meta, count: data.length }, data }, 200, rl);
     }
     if (p === "/api/v1/articles") {
       // 9 nov 2026 (Jeremy, "oui"): pre-match articles in the free API as an excerpt (title, lede, first paragraph) + mandatory "read the full analysis" link, so Google keeps our page as the original
@@ -501,26 +682,139 @@ async function v1(req: Request, u: URL) {
         const url = `${V1_SITE}${lg === "fr" ? "fr/" : ""}blog/${r.slug}/?utm_source=api&utm_medium=${encodeURIComponent(dom || "unknown")}`;
         return { title: A[`title_${lg}`] || r.title, lede: A[`lede_${lg}`] || null, excerpt: b[0] || null, kickoff: r.data?.ko || null, published_at: r.published_at, url, read_more: { text: rt, url, html: `<a href="${url}" target="_blank" rel="noopener">${rt}</a>`, required: true } };
       });
-      return v1Out({ attribution: V1_ATTR, meta: { ...meta, lang: lg, count: data.length, rule: "Show the excerpt only, with the read_more link visible under it. Do not republish the full article." }, data }, 200, rl);
+      return v1Out({ attribution: A, meta: { ...meta, lang: lg, count: data.length, rule: "Show the excerpt only, with the read_more link visible under it. Do not republish the full article." }, data }, 200, rl);
     }
     if (p === "/api/v1/tables") {
       // 9 nov 2026 (Jeremy, "oui"): predicted end-of-season tables from our nightly simulations (no logos, no provider ids)
       const c = (u.searchParams.get("competition") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-      if (!V1_TBL[c]) return v1Out({ attribution: V1_ATTR, meta: { ...meta, message: "Add ?competition=CODE" }, data: Object.entries(V1_TBL).map(([code, name]) => ({ code, name })) }, 200, rl);
+      if (!V1_TBL[c]) return v1Out({ attribution: A, meta: { ...meta, message: "Add ?competition=CODE" }, data: Object.entries(V1_TBL).map(([code, name]) => ({ code, name })) }, 200, rl);
       const d: any = await sb("rpc/afp_widget_table", { method: "POST", body: JSON.stringify({ lg: c }) });
-      if (!d?.teams?.length) return v1Out({ error: "not_available", attribution: V1_ATTR }, 404, rl);
+      if (!d?.teams?.length) return v1Out({ error: "not_available", attribution: A }, 404, rl);
       const r = (x: any) => (x == null ? null : Math.round(Number(x) * 1000) / 1000);
       const teams = d.teams.slice().sort((a: any, b: any) => b.xpts - a.xpts || a.pos - b.pos).map((t: any, i: number) => ({ rank: i + 1, team: t.name, played: t.pl, points: t.pts, expected_points: t.xpts, expected_position: r(t.pos), title: r(t.title), [`top_${d.top}`]: r(t.top), relegation: r(t.rel), attack_rating: r(t.att), defence_rating: r(t.def) }));
-      return v1Out({ attribution: V1_ATTR, meta: { ...meta, competition: c, name: d.name, season: d.season, simulations: d.sims, updated_at: d.at, top_places: d.top, relegation_places: d.rel, url: `${V1_SITE}?utm_source=api` }, data: teams }, 200, rl);
+      return v1Out({ attribution: A, meta: { ...meta, competition: c, name: d.name, season: d.season, simulations: d.sims, updated_at: d.at, top_places: d.top, relegation_places: d.rel, url: `${V1_SITE}?utm_source=api` }, data: teams }, 200, rl);
     }
     if (p === "/api/v1/reliability") {
       const s: any = await sb("rpc/afp_scores", { method: "POST", body: "{}" });
-      return v1Out({ attribution: V1_ATTR, meta: { ...meta, explain: V1_SITE + "method/" }, data: { all: s?.all ?? null, compared_with_market: s?.cmp ?? null, random_guess: s?.guess ?? null } }, 200, rl);
+      return v1Out({ attribution: A, meta: { ...meta, explain: V1_SITE + "method/" }, data: { all: s?.all ?? null, compared_with_market: s?.cmp ?? null, random_guess: s?.guess ?? null } }, 200, rl);
     }
-  } catch (e) { console.log("v1 error", p, String(e)); return v1Out({ error: "server", attribution: V1_ATTR }, 500); }
-  return v1Out({ error: "not_found", docs: V1_SITE + "api/", attribution: V1_ATTR }, 404);
+  } catch (e) { console.log("v1 error", p, String(e)); return v1Out({ error: "server", attribution: A }, 500); }
+  return v1Out({ error: "not_found", docs: V1_SITE + "api/", attribution: A }, 404);
+}
+// 9 nov 2026 (Jeremy): Gumroad "Ping" for the website Premium. URL: /api/gumroad?k=<afp_config gumroad_ping_key>.
+// Every paid charge (first sale and each monthly renewal) adds 31 days to the account with the same e-mail (now or at its next sign-in).
+async function gumroadPing(req: Request, u: URL) {
+  const cfg: any = {}; for (const r of ((await sb("afp_config?key=in.(gumroad_ping_key,gumroad_seller_id,gumroad_product_id,gumroad_permalink,gumroad_trial_days)&select=key,value")) || [])) cfg[r.key] = r.value;
+  if (!cfg.gumroad_ping_key || u.searchParams.get("k") !== cfg.gumroad_ping_key) return new Response("no", { status: 401 });
+  const f = new URLSearchParams(await req.text()), g = (k: string) => f.get(k) || null;
+  if (cfg.gumroad_seller_id && g("seller_id") !== cfg.gumroad_seller_id) return new Response("seller", { status: 403 });
+  if (cfg.gumroad_product_id && g("product_id") !== cfg.gumroad_product_id) return new Response("ok");
+  // Jeremy sells other products on the same Gumroad account (CleanTab Premium...): only the AIFP product counts
+  const pl = (g("permalink") || "").toLowerCase(), ppl = (g("product_permalink") || "").toLowerCase(), wants = String(cfg.gumroad_permalink || "").toLowerCase().split(",").map((s: string) => s.trim()).filter(Boolean);
+  // 9 nov 2026: AIFP Pro (aifp-pro) + the old AIFP Premium product (aifp-premium) for renewals of existing subscriptions
+  if (wants.length && !wants.some((w: string) => pl === w || ppl.endsWith("/l/" + w))) { console.log("gumroad ping other product", pl); return new Response("ok"); }
+  const sale = g("sale_id"), email = (g("email") || "").trim().toLowerCase();
+  if (!sale || !email) return new Response("ok");
+  const raw: any = {}; f.forEach((v, k) => { if (!/card|ip_country|ip|purchaser_id/.test(k)) raw[k] = v; });
+  const bad = g("refunded") === "true" || g("disputed") === "true";
+  const aid = (g("url_params[aid]") || g("aid") || "").toLowerCase(), okAid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(aid);
+  // free trial: Gumroad's exact field name is not documented for the Ping, so any *trial* field with a value (or a 0 price) counts
+  let tr = g("price") === "0";
+  // 9 nov 2026 (Jeremy, "j'avais l'essai gratuit de 7 jours, j'ai pas payé"): the Ping has no trial field and shows the full price at sign-up.
+  // When the product has a free trial (afp_config gumroad_trial_days), the first sale of a subscription is the trial; each real charge comes later with is_recurring_charge=true.
+  if (cfg.gumroad_trial_days && g("subscription_id") && g("is_recurring_charge") !== "true") tr = true; f.forEach((v, k) => { if (/trial/i.test(k) && v && !/^(false|0|null)$/i.test(v)) tr = true; });
+  if (tr) raw._trial = "1";
+  await sb("afp_gumroad_sales?on_conflict=sale_id", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ sale_id: sale, email, product_id: g("product_id"), subscription_id: g("subscription_id"), price_cents: Number(g("price")) || null, currency: g("currency"), applied: bad, raw, uid: okAid ? aid : null }) });
+  const acc = (okAid ? (await sb(`afp_accounts?uid=eq.${aid}&select=uid`))?.[0] : null) || (await sb(`afp_accounts?email=eq.${encodeURIComponent(email)}&select=uid`))?.[0];
+  if (acc?.uid && !bad) await sb("rpc/afp_web_prem_apply", { method: "POST", body: JSON.stringify({ p_uid: acc.uid }) });
+  console.log("gumroad ping", sale, bad ? "refunded" : "paid", acc ? "account" : "pending");
+  return new Response("ok");
+}
+// 9 nov 2026 (Jeremy, "un truc de support"): support requests from the website and the mini app go to Jeremy in the AIFP bot.
+// He answers by replying to the bot message (afp-bot); afp-engine re-sends unanswered requests every hour until he answers.
+const SUP_CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "content-type,x-session,x-init-data", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Max-Age": "86400" };
+const supOut = (d: any, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { ...SUP_CORS, "Content-Type": "application/json", "Cache-Control": "no-store" } });
+const supEsc = (s: any) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+export function supportAdminText(r: any, remind = 0) {
+  const who = [r.name, r.tg_id ? `Telegram ${r.tg_id}` : "", r.email].filter(Boolean).map(supEsc).join(" · ") || "Anonyme";
+  const age = Math.max(1, Math.round((Date.now() - Date.parse(r.created_at)) / 60000));
+  return `${remind ? `⏰ <b>Rappel ${remind}</b> (${age >= 120 ? Math.round(age / 60) + " h" : age + " min"} sans réponse)\n` : ""}🆘 <b>Support AIFP #${r.id}</b>\nDe : ${who}\nVia : ${r.src === "tg" ? "mini app Telegram" : "site"}${r.page ? " (" + supEsc(r.page) + ")" : ""}\nRéponse par : ${r.tg_id ? "Telegram (le bot lui envoie)" : r.uid ? "son compte sur le site" + (r.email ? " + écris-lui à " + supEsc(r.email) : "") : r.email ? "e-mail, écris-lui à " + supEsc(r.email) : "aucun moyen"}\n\n${supEsc(r.text)}\n\n↩️ <i>Réponds à ce message pour lui répondre (ou /close pour classer).</i>`;
+}
+async function supAdmin(r: any, remind = 0) {
+  const adm = (await sb("afp_config?key=eq.admin_tg_id&select=value"))?.[0]?.value;
+  if (!adm || !TOKEN) return;
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: Number(adm), text: supportAdminText(r, remind), parse_mode: "HTML", reply_markup: { force_reply: true, input_field_placeholder: "Ta réponse…" } }) }).catch(() => {});
+}
+async function supWho(req: Request) {
+  const init = req.headers.get("x-init-data") || "";
+  if (init && checkInit(init)) { try { const tu = JSON.parse(new URLSearchParams(init).get("user") || "{}"); if (tu.id) return { src: "tg", tg_id: Number(tu.id), name: [tu.first_name, tu.username ? "@" + tu.username : ""].filter(Boolean).join(" "), lang: String(tu.language_code || "").startsWith("fr") ? "fr" : "en" } as any; } catch {} }
+  const me = await acctUser(req);
+  if (me) { const a = (await sb(`afp_accounts?uid=eq.${me.uid}&select=email,name,tg_id,lang`))?.[0] || {}; return { src: "web", uid: me.uid, tg_id: a.tg_id || null, name: a.name || null, email: a.email || null, lang: a.lang || null } as any; }
+  return null;
+}
+// 9 nov 2026 (Jeremy, "un bouton pour annuler leur abonnement"): Premium subscription status + cancel / resume.
+// Telegram Stars: editUserStarSubscription (Premium stays until the end of the paid month). Gumroad: link to the Gumroad "Manage membership" page.
+async function premSub(req: Request, tgId: number | null, uid: string | null, reply: (d: any, s?: number) => Response) {
+  const tu = tgId ? (await sb(`afp_users?tg_id=eq.${tgId}&select=premium_until,charge_id,sub_canceled,first_name,username`))?.[0] : null;
+  const ac = uid ? (await sb(`afp_accounts?uid=eq.${uid}&select=premium_until,prem_source,tg_id`))?.[0] : null;
+  if (!tgId && ac?.tg_id) tgId = Number(ac.tg_id);
+  const tu2 = tu || (tgId ? (await sb(`afp_users?tg_id=eq.${tgId}&select=premium_until,charge_id,sub_canceled,first_name,username`))?.[0] : null);
+  const now = Date.now();
+  const stars = tu2 && tu2.charge_id && tu2.premium_until && Date.parse(tu2.premium_until) > now ? tu2 : null;
+  let gum: any = null;
+  const gUid = uid || (tgId ? (await sb(`afp_accounts?tg_id=eq.${tgId}&select=uid`))?.[0]?.uid : null);
+  if (gUid) {
+    const a = ac || (await sb(`afp_accounts?uid=eq.${gUid}&select=premium_until,prem_source`))?.[0];
+    const s = (await sb(`afp_gumroad_sales?uid=eq.${gUid}&subscription_id=not.is.null&select=subscription_id&order=created_at.desc&limit=1`))?.[0];
+    if (a?.premium_until && Date.parse(a.premium_until) > now && s?.subscription_id) gum = { until: a.premium_until, manage: `https://app.gumroad.com/subscriptions/${encodeURIComponent(s.subscription_id)}/manage` };
+  }
+  if (req.method === "POST") {
+    const b: any = await req.json().catch(() => ({}));
+    if (!stars) return reply({ ok: false, error: "no_stars" }, 400);
+    const cancel = b.cancel !== false;
+    const r = await fetch(`https://api.telegram.org/bot${TOKEN}/editUserStarSubscription`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_id: tgId, telegram_payment_charge_id: stars.charge_id, is_canceled: cancel }) }).then(x => x.json()).catch(() => null);
+    if (!r?.ok) return reply({ ok: false, error: "telegram", detail: r?.description || null }, 502);
+    await sb(`afp_users?tg_id=eq.${tgId}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ sub_canceled: cancel }) });
+    const adm = (await sb("afp_config?key=eq.admin_tg_id&select=value"))?.[0]?.value;
+    if (adm) await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: Number(adm), text: `${cancel ? "❌ AI Football Predictor - Premium annulé" : "🔄 AI Football Predictor - Premium réactivé"} (étoiles)\n${stars.first_name || ""} ${stars.username ? "@" + stars.username : ""} (${tgId})\nActif jusqu'au ${String(stars.premium_until).slice(0, 10)}` }) }).catch(() => {});
+    return reply({ ok: true, canceled: cancel, until: stars.premium_until });
+  }
+  return reply({ ok: true, stars: stars ? { until: stars.premium_until, canceled: !!stars.sub_canceled } : null, gumroad: gum });
+}
+async function supportRoutes(req: Request, u: URL) {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: SUP_CORS });
+  try {
+    const who = await supWho(req);
+    if (u.pathname === "/api/support/mine") {
+      if (!who) return supOut({ ok: true, items: [] });
+      const f = who.uid ? `uid=eq.${who.uid}` : `tg_id=eq.${who.tg_id}`;
+      const items = (await sb(`afp_support?${f}&select=id,created_at,text,reply,answered_at,closed&order=id.desc&limit=10`)) || [];
+      return supOut({ ok: true, items });
+    }
+    if (u.pathname === "/api/support" && req.method === "POST") {
+      const b: any = await req.json().catch(() => ({}));
+      const text = String(b.text || "").trim().slice(0, 3000);
+      if (text.length < 5) return supOut({ ok: false, error: "text" }, 400);
+      let email = String(b.email || "").trim().slice(0, 160);
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return supOut({ ok: false, error: "email" }, 400);
+      if (!who && !email) return supOut({ ok: false, error: "contact" }, 400);
+      const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim().slice(0, 60);
+      const since = new Date(Date.now() - 3600e3).toISOString();
+      const recent = (await sb(`afp_support?created_at=gt.${since}&${who?.uid ? `uid=eq.${who.uid}` : who?.tg_id ? `tg_id=eq.${who.tg_id}` : `ip=eq.${encodeURIComponent(ip || "x")}`}&select=id`)) || [];
+      if (recent.length >= 5) return supOut({ ok: false, error: "wait" }, 429);
+      const row = { src: who?.src || "web", uid: who?.uid || null, tg_id: who?.tg_id || null, name: (who?.name || String(b.name || "").trim().slice(0, 80)) || null, email: email || who?.email || null, lang: who?.lang || (b.lang === "fr" ? "fr" : "en"), page: String(b.page || "").slice(0, 120) || null, ip, text };
+      const ins = await sb("afp_support", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify(row) });
+      const r = Array.isArray(ins) ? ins[0] : null;
+      if (!r) return supOut({ ok: false, error: "db" }, 500);
+      await supAdmin(r);
+      return supOut({ ok: true, id: r.id, reply_by: r.tg_id ? "telegram" : r.uid ? "account" : "email" });
+    }
+    return supOut({ ok: false, error: "not_found" }, 404);
+  } catch (e) { return supOut({ ok: false, error: "server" }, 500); }
 }
 export async function handle(req: Request) {
+  if (new URL(req.url).pathname === "/api/gumroad" && req.method === "POST") return gumroadPing(req, new URL(req.url));
+  if (new URL(req.url).pathname.startsWith("/api/support")) return supportRoutes(req, new URL(req.url));
   if (new URL(req.url).pathname.startsWith("/api/v1")) return v1(req, new URL(req.url));
   if (new URL(req.url).pathname.startsWith("/api/tg/")) { if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS }); return tgRoutes(req, new URL(req.url)); }
   if (new URL(req.url).pathname.startsWith("/api/acct/")) return acctRoutes(req, new URL(req.url));
@@ -534,15 +828,19 @@ export async function handle(req: Request) {
     // 9 nov 2026 (Jeremy, "faut revoir le prix", 250 ⭐ chosen): ONE Premium, monthly Stars subscription, Telegram only.
     // No ads (app + linked website) + Premium widgets (colours, logo, no Sorare card) + API Premium (50 000 calls/day).
     // The AFP bot activates it on successful_payment (payload afp_sub:premium, any amount).
-    if (u.pathname === "/api/premium" && req.method === "POST") {
-      if (!checkInit(req.headers.get("x-init-data") || "")) return out({ ok: false, error: "telegram" }, 401);
-      const b: any = await req.json().catch(() => ({})), fr = b.lang === "fr", title = "AIFP Premium";
-      const description = fr ? "Sans pub dans l'appli et sur le site, widgets à tes couleurs avec ton logo, API 50 000 requêtes par jour. 1 mois, renouvelé chaque mois, résiliable à tout moment."
-        : "No ads in the app and on the website, widgets in your colours with your logo, API 50,000 requests a day. 1 month, renewed monthly, cancel anytime.";
-      const r: any = await (await fetch(`https://api.telegram.org/bot${TOKEN}/createInvoiceLink`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, description, payload: "afp_sub:premium", currency: "XTR", prices: [{ label: title, amount: PREM_STARS }], subscription_period: 2592000 }) })).json().catch(() => null);
-      if (!r?.ok) { console.log("premium invoice error", JSON.stringify(r)); return out({ ok: false }); }
-      return out({ ok: true, link: r.result, stars: PREM_STARS });
+    // 9 nov 2026 (Jeremy): no more Stars payment, the only paid offer is AIFP Pro on the website (Gumroad)
+    if (u.pathname === "/api/sindex") return out(await sindex(u.searchParams.get("w") === "1"));
+    if (u.pathname === "/api/teamx") {
+      const id = Number(u.searchParams.get("id")), I: any = await sindex(), e = (I.teams || []).find((t: any) => t[0] === id); if (!e) return out({ ok: false });
+      if (e[4]) return out(await team(e[4], e[5] === "a" ? "a" : "h"));
+      const c = (I.comps || []).find((x: any) => x.c === e[3]); if (!c) return out({ ok: false });
+      return out(await teamCore(id, c.af, c.ss, e[1], null));
     }
+    if (u.pathname === "/api/leaguex") {
+      const code = String(u.searchParams.get("c") || ""), I: any = await sindex(), c = (I.comps || []).find((x: any) => x.c === code); if (!c) return out({ ok: false });
+      return out(await leagueCore({ lg: c.af, ss: c.ss, lname: c.nm, llogo: c.logo, country: c.country, code, hid: null, aid: null }));
+    }
+    if (u.pathname === "/api/premium") return out({ ok: false, error: "gone", pro: "https://aifootpredictor.com/pro/" }, 410);
     if (u.pathname === "/api/team") return out(await team(n, u.searchParams.get("s") || "h"));
     if (u.pathname === "/api/league") return out(await league(n));
     if (u.pathname === "/api/player") return out(await player(n, Number(u.searchParams.get("id"))));
