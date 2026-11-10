@@ -28,6 +28,7 @@
     if (frames.indexOf(e.source) < 0) frames.push(e.source);
     if (a === "hello") tell(e.source);
     else if (a === "login") open();
+    else if (a === "link") link(); // 10 nov 2026: "link your Telegram account" line in the Pro space
     else if (a === "logout") logout();
   });
   // 9 nov 2026 (Jeremy): GitHub sign-in, the popup (api.aifootpredictor.com) sends back the session
