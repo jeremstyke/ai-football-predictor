@@ -113,4 +113,5 @@ addEventListener("message",function(e){if(e.source!==app.contentWindow)return;va
 })();
 </script>
 <script>/* 9 nov 2026 (Jeremy): on a computer the install button says "computer", not "phone" */(function(){if(/Mobi|Android|iP(hone|ad|od)/i.test(navigator.userAgent))return;var b=document.getElementById("instb"),p=document.getElementById("inst");if(!b||!p)return;var fr=document.documentElement.lang=="fr";b.textContent=fr?"💻 Installer sur mon ordinateur":"💻 Install on my computer";var d=null;addEventListener("beforeinstallprompt",function(e){e.preventDefault();d=e});b.onclick=function(){if(d){d.prompt();d=null;return}p.textContent=fr?"Dans Chrome ou Edge : clique sur l'icône d'installation à droite de la barre d'adresse, ou ouvre le menu ⋮ puis « Installer AI Football Predictor ».":"In Chrome or Edge: click the install icon on the right of the address bar, or open the ⋮ menu then \"Install AI Football Predictor\".";p.style.display="block"}})();</script>
+<script type="text/javascript">var infolinks_pid = 3449473; var infolinks_wsid = 0;</script><script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>
 </body></html>
