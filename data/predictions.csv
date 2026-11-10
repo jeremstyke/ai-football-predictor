@@ -1,4 +1,7 @@
 n,kickoff,league,home,away,p_home,p_draw,p_away,model_home,model_draw,model_away,mkt_home,mkt_draw,mkt_away,xg_home,xg_away,home_goals,away_goals,result
+5742,2026-11-10T20:00:00+00:00,UWCL,Paris Saint Germain W,Bayern Munich W,0.2778,0.289,0.4332,0.2778,0.289,0.4332,,,,1.08,1.47,1,2,A
+5741,2026-11-10T20:00:00+00:00,UWCL,Inter Milano W,Manchester City W,0.2511,0.2516,0.4973,0.2511,0.2516,0.4973,,,,1.25,1.93,1,4,A
+5740,2026-11-10T17:45:00+00:00,UWCL,Real Madrid W,Paris FC W,0.5284,0.24,0.2315,0.5284,0.24,0.2315,,,,2.09,1.24,3,0,H
 127,2026-11-09T18:00:00+00:00,ROU,FC Botosani,Otelul,0.4576,0.2724,0.27,0.4722,0.2745,0.2534,0.4431,0.2703,0.2866,1.54,1.07,1,1,D
 146,2026-11-08T22:30:00+00:00,ARG,Central Cordoba,Lanus,0.1986,0.2887,0.5127,0.2174,0.3119,0.4707,0.1799,0.2654,0.5547,0.78,1.27,1,1,D
 73,2026-11-08T20:30:00+00:00,P1,Estrela,Benfica,0.0858,0.1499,0.7644,0.0762,0.1446,0.7792,0.0953,0.1552,0.7495,0.8,2.78,2,3,A
