@@ -1,4 +1,4 @@
-/* 10 nov 2026 (Jeremy): cookie consent for the ads (Google AdSense, Infolinks). The audience stats below use no cookies. The choice is kept 6 months. A "Cookies" link in the footer reopens it. */
+/* 10 nov 2026 (Jeremy, "il faudrait qu'Infolinks soit chargé quand même"): Infolinks loads after either choice; without consent it serves contextual ads only (its own EEA default). Cookie consent for the ads (Google AdSense, Infolinks). The audience stats below use no cookies. The choice is kept 6 months. A "Cookies" link in the footer reopens it. */
 (function () {
   try {
     var fr = (document.documentElement.lang || "").slice(0, 2) === "fr", K = "afp_consent", c = null, il = 0;
@@ -6,7 +6,7 @@
     var A = window.adsbygoogle = window.adsbygoogle || [];
     function apply(v) {
       try { A.requestNonPersonalizedAds = v === "yes" ? 0 : 1; A.pauseAdRequests = 0; } catch (e) {}
-      if (v === "yes" && !il && window.infolinks_pid) { il = 1; var s = document.createElement("script"); s.src = "https://resources.infolinks.com/js/infolinks_main.js"; s.async = true; document.body.appendChild(s); }
+      if (!il && window.infolinks_pid) { il = 1; var s = document.createElement("script"); s.src = "https://resources.infolinks.com/js/infolinks_main.js"; s.async = true; document.body.appendChild(s); }
     }
     function hide() { var b = document.getElementById("afpck"); if (b) b.parentNode.removeChild(b); }
     function show() {
