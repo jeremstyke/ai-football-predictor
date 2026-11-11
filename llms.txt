@@ -60,8 +60,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [Tottenham (Premier League)](https://aifootpredictor.com/team/tottenham/): season, simulated finish, next matches with probabilities
 - [Hull City (Premier League)](https://aifootpredictor.com/team/hull-city/): season, simulated finish, next matches with probabilities
 - [Fulham (Premier League)](https://aifootpredictor.com/team/fulham/): season, simulated finish, next matches with probabilities
-- [Ipswich (Premier League)](https://aifootpredictor.com/team/ipswich/): season, simulated finish, next matches with probabilities
 - [Sunderland (Premier League)](https://aifootpredictor.com/team/sunderland/): season, simulated finish, next matches with probabilities
+- [Ipswich (Premier League)](https://aifootpredictor.com/team/ipswich/): season, simulated finish, next matches with probabilities
 - [Coventry (Premier League)](https://aifootpredictor.com/team/coventry/): season, simulated finish, next matches with probabilities
 - [Crystal Palace (Premier League)](https://aifootpredictor.com/team/crystal-palace/): season, simulated finish, next matches with probabilities
 - [Barcelona (LaLiga)](https://aifootpredictor.com/team/barcelona/): season, simulated finish, next matches with probabilities
@@ -102,8 +102,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [Monza (Serie A)](https://aifootpredictor.com/team/monza/): season, simulated finish, next matches with probabilities
 - [Lecce (Serie A)](https://aifootpredictor.com/team/lecce/): season, simulated finish, next matches with probabilities
 - [Venezia (Serie A)](https://aifootpredictor.com/team/venezia/): season, simulated finish, next matches with probabilities
-- [Udinese (Serie A)](https://aifootpredictor.com/team/udinese/): season, simulated finish, next matches with probabilities
 - [Parma (Serie A)](https://aifootpredictor.com/team/parma/): season, simulated finish, next matches with probabilities
+- [Udinese (Serie A)](https://aifootpredictor.com/team/udinese/): season, simulated finish, next matches with probabilities
 - [Bayern München (Bundesliga)](https://aifootpredictor.com/team/bayern-munchen/): season, simulated finish, next matches with probabilities
 - [Borussia Dortmund (Bundesliga)](https://aifootpredictor.com/team/borussia-dortmund/): season, simulated finish, next matches with probabilities
 - [RB Leipzig (Bundesliga)](https://aifootpredictor.com/team/rb-leipzig/): season, simulated finish, next matches with probabilities
@@ -119,8 +119,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [1. FC Köln (Bundesliga)](https://aifootpredictor.com/team/1-fc-koln/): season, simulated finish, next matches with probabilities
 - [Hamburger SV (Bundesliga)](https://aifootpredictor.com/team/hamburger-sv/): season, simulated finish, next matches with probabilities
 - [SC Paderborn 07 (Bundesliga)](https://aifootpredictor.com/team/sc-paderborn-07/): season, simulated finish, next matches with probabilities
-- [FC Schalke 04 (Bundesliga)](https://aifootpredictor.com/team/fc-schalke-04/): season, simulated finish, next matches with probabilities
 - [Union Berlin (Bundesliga)](https://aifootpredictor.com/team/union-berlin/): season, simulated finish, next matches with probabilities
+- [FC Schalke 04 (Bundesliga)](https://aifootpredictor.com/team/fc-schalke-04/): season, simulated finish, next matches with probabilities
 - [Borussia Mönchengladbach (Bundesliga)](https://aifootpredictor.com/team/borussia-monchengladbach/): season, simulated finish, next matches with probabilities
 - [FC Porto (Liga Portugal)](https://aifootpredictor.com/team/fc-porto/): season, simulated finish, next matches with probabilities
 - [Benfica (Liga Portugal)](https://aifootpredictor.com/team/benfica/): season, simulated finish, next matches with probabilities
@@ -169,8 +169,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [Göztepe (Süper Lig)](https://aifootpredictor.com/team/goztepe/): season, simulated finish, next matches with probabilities
 - [Çorum FK (Süper Lig)](https://aifootpredictor.com/team/corum-fk/): season, simulated finish, next matches with probabilities
 - [Rizespor (Süper Lig)](https://aifootpredictor.com/team/rizespor/): season, simulated finish, next matches with probabilities
-- [Alanyaspor (Süper Lig)](https://aifootpredictor.com/team/alanyaspor/): season, simulated finish, next matches with probabilities
 - [Konyaspor (Süper Lig)](https://aifootpredictor.com/team/konyaspor/): season, simulated finish, next matches with probabilities
+- [Alanyaspor (Süper Lig)](https://aifootpredictor.com/team/alanyaspor/): season, simulated finish, next matches with probabilities
 - [Gençlerbirliği S.K. (Süper Lig)](https://aifootpredictor.com/team/genclerbirligi-s-k/): season, simulated finish, next matches with probabilities
 - [Erzurumspor FK (Süper Lig)](https://aifootpredictor.com/team/erzurumspor-fk/): season, simulated finish, next matches with probabilities
 - [Samsunspor (Süper Lig)](https://aifootpredictor.com/team/samsunspor/): season, simulated finish, next matches with probabilities
