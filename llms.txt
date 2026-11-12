@@ -60,8 +60,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [Tottenham (Premier League)](https://aifootpredictor.com/team/tottenham/): season, simulated finish, next matches with probabilities
 - [Hull City (Premier League)](https://aifootpredictor.com/team/hull-city/): season, simulated finish, next matches with probabilities
 - [Fulham (Premier League)](https://aifootpredictor.com/team/fulham/): season, simulated finish, next matches with probabilities
-- [Sunderland (Premier League)](https://aifootpredictor.com/team/sunderland/): season, simulated finish, next matches with probabilities
 - [Ipswich (Premier League)](https://aifootpredictor.com/team/ipswich/): season, simulated finish, next matches with probabilities
+- [Sunderland (Premier League)](https://aifootpredictor.com/team/sunderland/): season, simulated finish, next matches with probabilities
 - [Coventry (Premier League)](https://aifootpredictor.com/team/coventry/): season, simulated finish, next matches with probabilities
 - [Crystal Palace (Premier League)](https://aifootpredictor.com/team/crystal-palace/): season, simulated finish, next matches with probabilities
 - [Barcelona (LaLiga)](https://aifootpredictor.com/team/barcelona/): season, simulated finish, next matches with probabilities
