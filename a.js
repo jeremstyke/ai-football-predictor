@@ -47,7 +47,13 @@
       if (m && m.firstElementChild) { m.insertBefore(mkad("afpad0"), m.firstElementChild.nextSibling); try { A.push({}); } catch (e) {} }
       if (f && f.parentNode) { f.parentNode.insertBefore(mkad("afpad"), f); try { A.push({}); } catch (e) {} }
     }
-    function init() { try { foot(); } catch (e) {} try { adunit(); } catch (e) {} if (c) apply(c); else show(); }
+    /* 14 nov 2026 (Jeremy, "remets le code Infolinks quand meme"): Infolinks is loaded on every page right away (publisher id set here for the pages generated without it), not only after the cookie banner choice */
+    function infolinks() {
+      if (il || /^\/(fr\/)?player\//.test(location.pathname)) return;
+      if (!window.infolinks_pid) { window.infolinks_pid = 3449473; window.infolinks_wsid = 0; }
+      il = 1; var s = document.createElement("script"); s.src = "https://resources.infolinks.com/js/infolinks_main.js"; s.async = true; document.body.appendChild(s);
+    }
+    function init() { try { foot(); } catch (e) {} try { adunit(); } catch (e) {} try { infolinks(); } catch (e) {} if (c) apply(c); else show(); }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
   } catch (e) {}
 })();
