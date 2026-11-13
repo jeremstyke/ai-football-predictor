@@ -53,7 +53,14 @@
       if (!window.infolinks_pid) { window.infolinks_pid = 3449473; window.infolinks_wsid = 0; }
       il = 1; var s = document.createElement("script"); s.src = "https://resources.infolinks.com/js/infolinks_main.js"; s.async = true; document.body.appendChild(s);
     }
-    function init() { try { foot(); } catch (e) {} try { adunit(); } catch (e) {} try { infolinks(); } catch (e) {} if (c) apply(c); else show(); }
+    /* 14 nov 2026 (Jeremy): Notifpush push-notification SDK, same code as the snippet he was given, added from here so it covers every page */
+    function notifpush() {
+      if (/^\/(fr\/)?player\//.test(location.pathname) || window.__nadzOn) return; window.__nadzOn = 1;
+      window._nAdzq = window._nAdzq || []; window._nAdzq.push(["setIds", "62e1995e0e7de2e0"]);
+      var t = document.createElement("script"); t.type = "text/javascript"; t.defer = true; t.async = true; t.src = "https://notifpush.com/scripts/nadz-sdk.js";
+      var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(t, s);
+    }
+    function init() { try { notifpush(); } catch (e) {} try { foot(); } catch (e) {} try { adunit(); } catch (e) {} try { infolinks(); } catch (e) {} if (c) apply(c); else show(); }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
   } catch (e) {}
 })();
