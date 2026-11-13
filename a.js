@@ -34,15 +34,18 @@
       var a = document.createElement("a"); a.href = "#"; a.id = "afpckl"; a.textContent = "Cookies"; a.onclick = function (e) { e.preventDefault(); show(); };
       f.appendChild(document.createTextNode(" · ")); f.appendChild(a);
     }
-    /* 13 nov 2026 (Jeremy): responsive AdSense unit "Responsive AIFP" just above the footer of content pages (not on the paid, player, widget and docs pages) */
-    function adunit() {
-      var p = location.pathname; if (/^\/(fr\/)?(pro|premium|player|w|widget|account|api\/docs)\//.test(p) || /^\/(fr\/)?widget\//.test(p)) return;
-      var f = document.querySelector("footer"); if (!f || !f.parentNode || document.getElementById("afpad")) return;
-      var d = document.createElement("div"); d.id = "afpad"; d.style.cssText = "max-width:1100px;margin:24px auto;padding:0 16px;min-height:90px;overflow:hidden";
+    /* 13 nov 2026 (Jeremy): responsive AdSense unit "Responsive AIFP", one under the first block of the page and one above the footer, on every page except the player */
+    function mkad(id) {
+      var d = document.createElement("div"); d.id = id; d.style.cssText = "max-width:1100px;margin:20px auto;padding:0 16px;min-height:100px;overflow:hidden;box-sizing:border-box";
       var i = document.createElement("ins"); i.className = "adsbygoogle"; i.style.display = "block";
       i.setAttribute("data-ad-client", "ca-pub-8638687738606649"); i.setAttribute("data-ad-slot", "9825496384"); i.setAttribute("data-ad-format", "auto"); i.setAttribute("data-full-width-responsive", "true");
-      d.appendChild(i); f.parentNode.insertBefore(d, f);
-      try { A.push({}); } catch (e) {}
+      d.appendChild(i); return d;
+    }
+    function adunit() {
+      if (/^\/(fr\/)?player\//.test(location.pathname) || document.getElementById("afpad")) return;
+      var f = document.querySelector("footer"), m = document.querySelector("main");
+      if (m && m.firstElementChild) { m.insertBefore(mkad("afpad0"), m.firstElementChild.nextSibling); try { A.push({}); } catch (e) {} }
+      if (f && f.parentNode) { f.parentNode.insertBefore(mkad("afpad"), f); try { A.push({}); } catch (e) {} }
     }
     function init() { try { foot(); } catch (e) {} try { adunit(); } catch (e) {} if (c) apply(c); else show(); }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
