@@ -119,8 +119,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [1. FC Köln (Bundesliga)](https://aifootpredictor.com/team/1-fc-koln/): season, simulated finish, next matches with probabilities
 - [Hamburger SV (Bundesliga)](https://aifootpredictor.com/team/hamburger-sv/): season, simulated finish, next matches with probabilities
 - [SC Paderborn 07 (Bundesliga)](https://aifootpredictor.com/team/sc-paderborn-07/): season, simulated finish, next matches with probabilities
-- [Union Berlin (Bundesliga)](https://aifootpredictor.com/team/union-berlin/): season, simulated finish, next matches with probabilities
 - [FC Schalke 04 (Bundesliga)](https://aifootpredictor.com/team/fc-schalke-04/): season, simulated finish, next matches with probabilities
+- [Union Berlin (Bundesliga)](https://aifootpredictor.com/team/union-berlin/): season, simulated finish, next matches with probabilities
 - [Borussia Mönchengladbach (Bundesliga)](https://aifootpredictor.com/team/borussia-monchengladbach/): season, simulated finish, next matches with probabilities
 - [FC Porto (Liga Portugal)](https://aifootpredictor.com/team/fc-porto/): season, simulated finish, next matches with probabilities
 - [Benfica (Liga Portugal)](https://aifootpredictor.com/team/benfica/): season, simulated finish, next matches with probabilities
@@ -169,8 +169,8 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [Göztepe (Süper Lig)](https://aifootpredictor.com/team/goztepe/): season, simulated finish, next matches with probabilities
 - [Çorum FK (Süper Lig)](https://aifootpredictor.com/team/corum-fk/): season, simulated finish, next matches with probabilities
 - [Rizespor (Süper Lig)](https://aifootpredictor.com/team/rizespor/): season, simulated finish, next matches with probabilities
-- [Konyaspor (Süper Lig)](https://aifootpredictor.com/team/konyaspor/): season, simulated finish, next matches with probabilities
 - [Alanyaspor (Süper Lig)](https://aifootpredictor.com/team/alanyaspor/): season, simulated finish, next matches with probabilities
+- [Konyaspor (Süper Lig)](https://aifootpredictor.com/team/konyaspor/): season, simulated finish, next matches with probabilities
 - [Gençlerbirliği S.K. (Süper Lig)](https://aifootpredictor.com/team/genclerbirligi-s-k/): season, simulated finish, next matches with probabilities
 - [Erzurumspor FK (Süper Lig)](https://aifootpredictor.com/team/erzurumspor-fk/): season, simulated finish, next matches with probabilities
 - [Samsunspor (Süper Lig)](https://aifootpredictor.com/team/samsunspor/): season, simulated finish, next matches with probabilities
