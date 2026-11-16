@@ -1,4 +1,5 @@
 n,kickoff,league,home,away,p_home,p_draw,p_away,model_home,model_draw,model_away,mkt_home,mkt_draw,mkt_away,xg_home,xg_away,home_goals,away_goals,result
+7633,2026-11-15T23:00:00+00:00,CNL,Panama,Curaçao,0.4353,0.2817,0.283,0.4353,0.2817,0.283,,,,1.54,1.15,2,0,H
 7664,2026-11-15T20:00:00+00:00,NWSL,NJ/NY Gotham FC W,Kansas City W,0.3795,0.3257,0.2948,0.3795,0.3257,0.2948,,,,1.12,0.92,1,2,A
 7629,2026-11-15T19:45:00+00:00,UNL,France,Türkiye,0.7325,0.1586,0.109,0.7325,0.1586,0.109,,,,3.04,0.86,2,1,H
 7631,2026-11-15T19:45:00+00:00,UNL,Spain,England,0.525,0.271,0.204,0.525,0.271,0.204,,,,1.67,0.85,2,3,A
