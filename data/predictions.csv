@@ -1,4 +1,5 @@
 n,kickoff,league,home,away,p_home,p_draw,p_away,model_home,model_draw,model_away,mkt_home,mkt_draw,mkt_away,xg_home,xg_away,home_goals,away_goals,result
+11078,2026-11-17T01:00:00+00:00,CNL,Canada,Guatemala,0.6656,0.2043,0.1301,0.6656,0.2043,0.1301,,,,2.32,0.73,4,1,H
 9354,2026-11-16T19:45:00+00:00,UNL,Switzerland,Scotland,0.6812,0.2008,0.118,0.6812,0.2008,0.118,,,,2.29,0.63,4,0,H
 9353,2026-11-16T19:45:00+00:00,UNL,Gibraltar,Malta,0.2877,0.3131,0.3992,0.2877,0.3131,0.3992,,,,0.97,1.23,1,1,D
 9352,2026-11-16T19:45:00+00:00,UNL,Greece,Serbia,0.5407,0.265,0.1943,0.5407,0.265,0.1943,,,,1.73,0.84,1,0,H
