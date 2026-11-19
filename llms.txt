@@ -197,7 +197,7 @@ Key facts: probabilities come from a Poisson model on goals and expected goals (
 - [R. Cherki (Manchester City)](https://aifootpredictor.com/player/mathis-cherki/): season stats and chance to score in the next match
 - [M. Rogers (Chelsea)](https://aifootpredictor.com/player/morgan-rogers/): season stats and chance to score in the next match
 - [M. Tavernier (Bournemouth)](https://aifootpredictor.com/player/marcus-tavernier/): season stats and chance to score in the next match
-- [B. Mbeumo (Manchester United)](https://aifootpredictor.com/player/bryan-mbeumo/): season stats and chance to score in the next match
+- [D. Calvert-Lewin (Leeds)](https://aifootpredictor.com/player/dominic-calvert-lewin/): season stats and chance to score in the next match
 - [Raphinha (Barcelona)](https://aifootpredictor.com/player/raphael-dias-belloli/): season stats and chance to score in the next match
 - [Kylian Mbappé (Real Madrid)](https://aifootpredictor.com/player/kylian-mbappe-lottin/): season stats and chance to score in the next match
 - [Lamine Yamal (Barcelona)](https://aifootpredictor.com/player/lamine-yamal-nasraoui-ebana/): season stats and chance to score in the next match
