@@ -121,7 +121,8 @@ addEventListener("message",function(e){if(e.source!==app.contentWindow)return;va
    This page keeps a copy of the favourite clubs, followed matches and competitions in its own storage and gives it back to the app at each start. */
 (function(){var app=document.getElementById("app"),K=["afp_fav","afp_fol","afp_cfol","afp_lang"];if(!app)return;
 function get(){var o={};K.forEach(function(k){try{var v=localStorage.getItem(k);if(v!=null)o[k]=v}catch(e){}});return o}
-function send(){try{app.contentWindow.postMessage({afpStore:get()},"*")}catch(e){}}
+function pro(){try{var a=JSON.parse(localStorage.getItem("aifp_acct")||"null");return !!(a&&a.prem&&Date.parse(a.prem)>Date.now())}catch(e){return false}}
+function send(){try{app.contentWindow.postMessage({afpStore:get(),afpPro:pro()},"*")}catch(e){}}
 app.addEventListener("load",function(){send();setTimeout(send,1500)});
 addEventListener("message",function(e){if(e.source!==app.contentWindow||!e.data)return;var d=e.data;
  if(d.afpStoreReq){send();return}
