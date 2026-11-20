@@ -81,3 +81,6 @@
     }, true);
   } catch (e) {}
 })();
+
+/* 20 nov 2026 (Jeremy): Monetag interstitial (vignette, zone 12311270) on every page of the site, never inside an iframe (widgets embedded on other sites). */
+(function () { try { if (window.top !== window) return; var s = document.createElement("script"); s.dataset.zone = "12311270"; s.src = "https://n6wxm.com/vignette.min.js"; (document.body || document.documentElement).appendChild(s); } catch (e) {} })();
