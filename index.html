@@ -117,4 +117,14 @@ addEventListener("message",function(e){if(e.source!==app.contentWindow)return;va
 </script>
 <script>/* 9 nov 2026 (Jeremy): on a computer the install button says "computer", not "phone" */(function(){if(/Mobi|Android|iP(hone|ad|od)/i.test(navigator.userAgent))return;var b=document.getElementById("instb"),p=document.getElementById("inst");if(!b||!p)return;var fr=document.documentElement.lang=="fr";b.textContent=fr?"💻 Installer sur mon ordinateur":"💻 Install on my computer";var d=null;addEventListener("beforeinstallprompt",function(e){e.preventDefault();d=e});b.onclick=function(){if(d){d.prompt();d=null;return}p.textContent=fr?"Dans Chrome ou Edge : cliquez sur l'icône d'installation à droite de la barre d'adresse, ou ouvrez le menu ⋮ puis « Installer AI Football Predictor ».":"In Chrome or Edge: click the install icon on the right of the address bar, or open the ⋮ menu then \"Install AI Football Predictor\".";p.style.display="block"}})();</script>
 <script type="text/javascript">var infolinks_pid = 3449473; var infolinks_wsid = 0;</script>
+<script>/* 20 nov 2026 (Jeremy, "dès que je ressors ça garde pas en mémoire"): the app is an iframe from another domain and iPhone Safari wipes its storage when the page closes.
+   This page keeps a copy of the favourite clubs, followed matches and competitions in its own storage and gives it back to the app at each start. */
+(function(){var app=document.getElementById("app"),K=["afp_fav","afp_fol","afp_cfol","afp_lang"];if(!app)return;
+function get(){var o={};K.forEach(function(k){try{var v=localStorage.getItem(k);if(v!=null)o[k]=v}catch(e){}});return o}
+function send(){try{app.contentWindow.postMessage({afpStore:get()},"*")}catch(e){}}
+app.addEventListener("load",function(){send();setTimeout(send,1500)});
+addEventListener("message",function(e){if(e.source!==app.contentWindow||!e.data)return;var d=e.data;
+ if(d.afpStoreReq){send();return}
+ if(d.afpStoreSet&&typeof d.afpStoreSet==="object"){var s=d.afpStoreSet;Object.keys(s).forEach(function(k){if(K.indexOf(k)<0)return;try{if(s[k]==null)localStorage.removeItem(k);else localStorage.setItem(k,String(s[k]))}catch(x){}})}});
+})();</script>
 </body></html>
