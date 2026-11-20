@@ -82,5 +82,3 @@
   } catch (e) {}
 })();
 
-/* 20 nov 2026 (Jeremy): Monetag tag (zone 12311613) on every page of the site except the Pro page and for Pro users, never inside an iframe (widgets embedded on other sites). */
-(function () { try { if (window.top !== window) return; if (/^\/(fr\/)?(pro|premium)\//.test(location.pathname)) return; try { var a = JSON.parse(localStorage.getItem("aifp_acct") || "null"); if (a && a.prem && Date.parse(a.prem) > Date.now()) return; } catch (x) {} var s = document.createElement("script"); s.dataset.zone = "12311613"; s.src = "https://nap5k.com/tag.min.js"; (document.body || document.documentElement).appendChild(s); } catch (e) {} })();
