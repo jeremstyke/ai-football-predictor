@@ -1,4 +1,5 @@
 n,kickoff,league,home,away,p_home,p_draw,p_away,model_home,model_draw,model_away,mkt_home,mkt_draw,mkt_away,xg_home,xg_away,home_goals,away_goals,result
+22204,2026-11-20T23:00:00+00:00,ARG,Velez Sarsfield,Belgrano,0.4358,0.3051,0.2591,0.4378,0.3166,0.2455,0.4337,0.2936,0.2726,1.22,0.84,1,1,D
 14537,2026-11-20T20:00:00+00:00,SP1,Ath Bilbao,Espanol,0.5659,0.2539,0.1802,0.4971,0.2933,0.2096,0.6347,0.2145,0.1508,1.4,0.82,0,1,A
 15003,2026-11-20T20:00:00+00:00,FD1W,Toulouse W,Marseille W,0.2341,0.2361,0.5299,0.2341,0.2361,0.5299,,,,1.29,2.16,1,1,D
 22503,2026-11-20T19:45:00+00:00,B1,Cercle Brugge,Westerlo,0.4519,0.2376,0.3105,0.4335,0.2221,0.3444,0.4703,0.2531,0.2766,2.05,1.82,1,0,H
